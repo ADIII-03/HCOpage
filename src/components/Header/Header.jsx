@@ -4,6 +4,12 @@ import { Link, NavLink } from "react-router-dom";
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Function to handle menu toggle
+  const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
+
+  // Function to close menu when clicking a link
+  const closeMenu = () => setIsMenuOpen(false);
+
   return (
     <header className="shadow sticky top-0 z-50">
       <nav className="bg-white px-6 lg:px-8 py-3 border-b border-gray-200">
@@ -20,7 +26,7 @@ function Header() {
           {/* Hamburger Menu for Mobile */}
           <button
             className="lg:hidden p-2 focus:outline-none"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            onClick={toggleMenu}
             aria-label="Toggle menu"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -61,6 +67,7 @@ function Header() {
                       `block py-2 px-4 rounded-lg transition duration-200 
                       ${isActive ? "text-orange-700 font-bold" : "text-gray-700 hover:text-orange-700"}`
                     }
+                    onClick={closeMenu} // Close menu on link click
                   >
                     {item.name}
                   </NavLink>
