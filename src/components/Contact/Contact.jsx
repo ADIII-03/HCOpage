@@ -1,46 +1,39 @@
-import React, { useState } from 'react';
-
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 function Contact() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    message: '',
-  });
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm();
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email) {
-      newErrors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Invalid email address';
+  useEffect(() => {
+    const savedData = localStorage.getItem('contactFormData');
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        Object.keys(parsedData).forEach((key) => {
+          setValue(key, parsedData[key]);
+        });
+      } catch (error) {
+        console.error('Error parsing saved form data:', error);
+      }
     }
-    if (!formData.message) newErrors.message = 'Message is required';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  }, [setValue]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (validateForm()) {
-      setIsSubmitting(true);
-      setTimeout(() => {
-        alert(JSON.stringify(formData, null, 2));
-        setIsSubmitting(false);
-      }, 1000);
-    }
-  };
+  const onSubmit = (data) => {
+   
+    const existingData = JSON.parse(localStorage.getItem("contactFormSubmissions")) || [];
+  
+    existingData.push(data);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (errors[name]) {
-      setErrors({ ...errors, [name]: '' });
-    }
+    localStorage.setItem("contactFormSubmissions", JSON.stringify(existingData));
+  
+    alert("Form data saved successfully!");
   };
+  
 
   return (
     <div className="relative py-20 bg-gray-50 min-h-screen overflow-hidden">
@@ -59,88 +52,81 @@ function Contact() {
 
         {/* Contact Form */}
         <div className="mt-12 max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md animate-slide-in">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div>
               <label className="block text-gray-700 font-medium">Full Name</label>
               <input
-                type="text"
-                name="name"
+                {...register('name', { required: 'Name is required' })}
                 className={`w-full mt-2 p-4 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 placeholder="John Doe"
-                value={formData.name}
-                onChange={handleChange}
               />
-              {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
+              {errors.name && <div className="text-red-500 text-sm mt-1">{errors.name.message}</div>}
             </div>
             <div>
               <label className="block text-gray-700 font-medium">Email Address</label>
               <input
-                type="email"
-                name="email"
+                {...register('email', {
+                  required: 'Email is required',
+                  pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email address' },
+                })}
                 className={`w-full mt-2 p-4 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 placeholder="you@example.com"
-                value={formData.email}
-                onChange={handleChange}
               />
-              {errors.email && <div className="text-red-500 text-sm mt-1">{errors.email}</div>}
+              {errors.email && <div className="text-red-500 text-sm mt-1">{errors.email.message}</div>}
             </div>
             <div>
               <label className="block text-gray-700 font-medium">Message</label>
               <textarea
-                name="message"
+                {...register('message', { required: 'Message is required' })}
                 className={`w-full mt-2 p-4 border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 rows="5"
                 placeholder="Write your message here..."
-                value={formData.message}
-                onChange={handleChange}
               />
-              {errors.message && <div className="text-red-500 text-sm mt-1">{errors.message}</div>}
+              {errors.message && <div className="text-red-500 text-sm mt-1">{errors.message.message}</div>}
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition disabled:bg-blue-300 animate-bounce"
-              disabled={isSubmitting}
+              className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition hover:scale-105"
             >
-              {isSubmitting ? 'Sending...' : 'Send Message'}
+              Send Message
             </button>
           </form>
         </div>
 
         {/* Join Us & QR Code Section */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-  {/* Join Us Section */}
-  <div className="bg-white p-10 rounded-lg shadow-lg text-center flex flex-col justify-between animate-fade-in md:h-[300px]">
-    <h3 className="text-4xl font-bold text-gray-900">🌟 Join Us</h3>
-    <p className="mt-4 text-lg text-gray-700 leading-relaxed">
-      Be a part of our mission! Register through our official Google form
-      and contribute towards creating meaningful change.
-    </p>
-    <a
-      href="https://forms.gle/L8PMpknuJmoMUbBs6"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="mt-6 inline-block px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-md hover:bg-green-600 hover:shadow-lg transition-all duration-300"
-    >
-      ✨ Register Now
-    </a>
-  </div>
+          {/* Join Us Section */}
+          <div className="bg-white p-10 rounded-lg shadow-lg text-center flex flex-col justify-between animate-fade-in md:h-[300px]">
+            <h3 className="text-4xl font-bold text-gray-900">🌟 Join Us</h3>
+            <p className="mt-4 text-lg text-gray-700 leading-relaxed">
+              Be a part of our mission! Register through our official Google form
+              and contribute towards creating meaningful change.
+            </p>
+            <a
+              href="https://forms.gle/L8PMpknuJmoMUbBs6"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-6 inline-block px-6 py-3 bg-green-500 text-white text-lg font-semibold rounded-full shadow-md hover:bg-green-600 hover:shadow-lg transition-all duration-300"
+            >
+              ✨ Register Now
+            </a>
+          </div>
 
-  {/* QR Code Section */}
-  <div className="bg-white p-10 rounded-lg shadow-lg flex flex-col items-center justify-center animate-fade-in md:h-[300px]">
-    <h3 className="text-4xl font-bold text-gray-900">🔗 Our Linktree</h3>
-    <p className="mt-4 text-lg text-gray-700 leading-relaxed text-center">
-      Discover more about HCO, our initiatives, and how you can be involved.
-    </p>
-    <div className="mt-6 flex justify-center w-full">
-      <img
-        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://linktr.ee/hco"
-        alt="Linktree QR Code"
-        className="rounded-lg shadow-md transition-transform transform hover:scale-110 duration-300 w-[150px] h-[150px]"
-      />
-    </div>
-  </div>
-</div>
-
+          {/* QR Code Section */}
+          <div className="bg-white p-10 rounded-lg shadow-lg flex flex-col items-center justify-center animate-fade-in md:h-[300px]">
+            <h3 className="text-4xl font-bold text-gray-900">🔗 Our Linktree</h3>
+            <p className="mt-4 text-lg text-gray-700 leading-relaxed text-center">
+              Discover more about HCO, our initiatives, and how you can be involved.
+            </p>
+            <div className="mt-6 flex justify-center w-full">
+              <img
+                src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://linktr.ee/hco"
+                alt="Linktree QR Code"
+                className="rounded-lg shadow-md transition-transform transform hover:scale-110 duration-300 w-[150px] h-[150px]"
+              />
+            </div>
+          </div>
+        </div>
 
         {/* Instagram Live Feed */}
         <div className="mt-16 text-center">
