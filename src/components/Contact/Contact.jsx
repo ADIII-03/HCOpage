@@ -6,7 +6,7 @@ function Contact() {
     register,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors,isSubmitting },
   } = useForm();
 
   useEffect(() => {
@@ -32,6 +32,7 @@ function Contact() {
     localStorage.setItem("contactFormSubmissions", JSON.stringify(existingData));
   
     alert("Form data saved successfully!");
+    reset();
   };
   
 
@@ -86,6 +87,7 @@ function Contact() {
             </div>
             <button
               type="submit"
+              disabled={isSubmitting}
               className="w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:bg-blue-700 transition hover:scale-105"
             >
               Send Message

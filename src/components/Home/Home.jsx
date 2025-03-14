@@ -5,7 +5,9 @@ export default function HomePage() {
     const [loading, setLoading] = useState(true);
 
     return (
+        
         <div className="bg-gray-100 min-h-screen">
+    
             {/* Hero Section */}
             <div className="relative bg-cover bg-center h-[500px] flex items-center justify-center text-center" style={{ backgroundImage: "url('https://via.placeholder.com/1500')" }}>
                 <div className="bg-black bg-opacity-50 p-10 rounded-xl max-w-4xl transition-transform duration-300 hover:scale-105">
