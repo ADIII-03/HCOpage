@@ -6,6 +6,7 @@ function Contact() {
     register,
     handleSubmit,
     setValue,
+    reset,
     formState: { errors,isSubmitting },
   } = useForm();
 
