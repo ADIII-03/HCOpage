@@ -21,9 +21,9 @@ export default function HomePage() {
             {/* Projects Section */}
             <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-6 px-6 pb-4">
                 {projects.map((project, index) => (
-                    <Link key={index} to={`/projects/${index}`} aria-label={`View ${project.title}`}>
+                    
                         <ProjectSection project={project} />
-                    </Link>
+                  
                 ))}
             </div>
 

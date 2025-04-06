@@ -97,7 +97,7 @@ function Contact() {
         </div>
 
         {/* Join Us & QR Code Section */}
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div   className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           {/* Join Us Section */}
           <div className="bg-white p-10 rounded-lg shadow-lg text-center flex flex-col justify-between animate-fade-in md:h-[300px]">
             <h3 className="text-4xl font-bold text-gray-900">🌟 Join Us</h3>
@@ -106,6 +106,7 @@ function Contact() {
               and contribute towards creating meaningful change.
             </p>
             <a
+      
               href="https://forms.gle/L8PMpknuJmoMUbBs6"
               target="_blank"
               rel="noopener noreferrer"

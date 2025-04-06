@@ -45,6 +45,38 @@ export default function About() {
           </div>
         </div>
 
+        {/* Founder’s Message Section */}
+<motion.div
+  className="max-w-4xl mx-auto mt-20 mb-10 p-6 bg-gradient-to-br from-purple-100 via-white to-blue-100 rounded-3xl shadow-2xl border border-gray-200"
+  initial={{ opacity: 0, y: 40 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.8, ease: "easeOut" }}
+>
+  <div className="flex flex-col md:flex-row items-center gap-6">
+    {/* Profile Picture with Animated Border */}
+    <div className="relative w-36 h-36 flex-shrink-0">
+      <div className="absolute inset-0 rounded-full bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 animate-spin-slow"></div>
+      <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-white shadow-lg">
+        <img
+          src="https://via.placeholder.com/150"
+          alt="Founder"
+          className="w-full h-full object-cover rounded-full"
+        />
+      </div>
+    </div>
+
+    {/* Message */}
+    <div className="text-center md:text-left">
+      <h3 className="text-2xl md:text-3xl font-bold text-gray-800">A Note from Our Founder</h3>
+      <p className="mt-4 text-gray-700 text-base md:text-lg">
+        "At Humanity Club Organization, we believe in the power of small acts of kindness to create big impacts. Together, let’s ignite change and spread compassion wherever we go."
+      </p>
+      <p className="mt-2 text-sm text-gray-500 font-medium">— John Doe, Founder</p>
+    </div>
+  </div>
+</motion.div>
+
+
         {/* Team Introduction Section with Animations */}
         <motion.div
           className="max-w-6xl mx-auto mt-16 p-6 bg-white shadow-lg rounded-xl"
@@ -92,7 +124,7 @@ export default function About() {
       </div>
     </div>
     
-  );
+  ); 
 }
 
 const projects = [
