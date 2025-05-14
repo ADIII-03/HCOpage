@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axiosInstance from '../../utils/axiosInstance';
+import logoImage from '/11zon_cropped.png';
+import qrCodeImage from '/WhatsApp Image 2025-02-13 at 22.15.48_b1c1058e.jpg';
 
 function Contact() {
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
@@ -34,13 +36,6 @@ function Contact() {
       // Save form data before submission in case of failure
       localStorage.setItem('contactFormData', JSON.stringify(data));
 
-      if (import.meta.env.DEV) {
-        console.log('Sending contact form:', {
-          url: `${axiosInstance.defaults.baseURL}/contact/send`,
-          data
-        });
-      }
-
       const response = await axiosInstance.post('/contact/send', data);
 
       if (response.data?.success) {
@@ -60,6 +55,11 @@ function Contact() {
         // Clear form data
         localStorage.removeItem('contactFormData');
         reset();
+
+        // Clear form after 3 seconds of showing success message
+        setTimeout(() => {
+          setSubmitStatus({ type: '', message: '' });
+        }, 3000);
       } else {
         throw new Error(response.data?.message || 'Failed to send message');
       }
@@ -78,6 +78,10 @@ function Contact() {
           : 'Please check your internet connection and try again.';
       } else if (error.response?.status === 429) {
         errorMessage += 'Too many attempts. Please try again later.';
+      } else if (error.response?.status === 404) {
+        errorMessage += import.meta.env.DEV
+          ? 'Contact endpoint not found. Please check the API route.'
+          : 'Service temporarily unavailable. Please try again later.';
       } else if (error.response?.status >= 500) {
         errorMessage += import.meta.env.DEV
           ? `Server error: ${error.message}`
@@ -96,9 +100,13 @@ function Contact() {
   return (
     <div className="relative py-20 bg-gray-50 min-h-screen overflow-hidden">
       <img
-        src="/11zon_cropped.png"
+        src={logoImage}
         alt="HCO Logo"
         className="absolute inset-0 w-full h-full object-contain opacity-10 animate-pulse"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = '/11zon_cropped.png';
+        }}
       />
       <div className="container m-auto px-6 text-gray-700 md:px-12 xl:px-24 relative z-10">
         <div className="max-w-3xl mx-auto text-center">
@@ -217,9 +225,13 @@ function Contact() {
             <div className="mt-6 flex flex-col items-center gap-4">
               <div className="relative w-full max-w-[150px] aspect-square">
                 <img
-                  src="/WhatsApp Image 2025-02-13 at 22.15.48_b1c1058e.jpg"
+                  src={qrCodeImage}
                   alt="HCO Linktree QR Code"
                   className="absolute inset-0 w-full h-full object-contain rounded-lg shadow-md bg-white"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = '/WhatsApp Image 2025-02-13 at 22.15.48_b1c1058e.jpg';
+                  }}
                 />
               </div>
               <a

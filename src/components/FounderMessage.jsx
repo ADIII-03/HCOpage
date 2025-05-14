@@ -7,9 +7,15 @@ const FounderMessage = () => {
         <div className="w-full md:w-1/3">
           <div className="relative rounded-full overflow-hidden aspect-square">
             <img 
-              src="/WhatsApp Image 2025-05-15 at 00.43.28_409cd770.jpg"
+              src="/images/WhatsApp Image 2025-05-15 at 00.43.28_409cd770.jpg"
               alt="Saba Sheikh"
               className="w-full h-full object-cover"
+              onError={(e) => {
+                e.target.onerror = null; // Prevent infinite loop
+                console.error('Failed to load founder image');
+                // You can set a fallback image here if needed
+                // e.target.src = '/path/to/fallback-image.jpg';
+              }}
             />
           </div>
         </div>
