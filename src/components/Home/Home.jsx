@@ -204,8 +204,8 @@ export default function HomePage() {
 
     return (
         <div className="bg-gray-100 min-h-screen">
-            {/* Hero Section with Enhanced Animation */}
-            <div className="relative min-h-[500px] md:h-[600px] lg:h-[700px] flex items-center justify-center text-center overflow-hidden mt-[60px]"
+            {/* Hero Section */}
+            <div className="relative min-h-[500px] md:h-[600px] lg:h-[700px] flex items-center justify-center text-center overflow-hidden"
                 style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}>
@@ -217,20 +217,22 @@ export default function HomePage() {
                 </div>
 
                 <div className="relative z-10 flex flex-col items-center justify-center">
-                    {/* Logo with enhanced animation */}
-                    <div className="absolute w-full h-full flex items-center justify-center translate-y-12">
-                        <div className="w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96 relative animate-spin-slow">
-                            <img
-                                src="/11zon_cropped.png"
-                                alt="HCO Logo"
-                                className="w-full h-full object-contain opacity-10"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+                    {/* Logo with float animation and shining border */}
+                    <div className="absolute w-full h-full flex items-center justify-center">
+                        <div className="w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96 relative animate-float">
+                            <div className="absolute inset-0 rounded-full animate-border bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500"></div>
+                            <div className="absolute inset-[3px] rounded-full bg-white flex items-center justify-center">
+                                <img
+                                    src="/11zon_cropped.png"
+                                    alt="HCO Logo"
+                                    className="w-[95%] h-[95%] object-contain"
+                                />
+                            </div>
                         </div>
                     </div>
 
                     {/* Text content */}
-                    <div className="relative z-20 max-w-4xl mx-auto px-4 md:px-8">
+                    <div className="relative z-20 max-w-4xl">
                         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 opacity-0 animate-fadeIn drop-shadow-lg">
                             One Step Towards Humanity
                         </h1>
@@ -241,38 +243,12 @@ export default function HomePage() {
                 </div>
             </div>
 
-            {/* Add required styles to the existing animations.css file */}
-            <style jsx>{`
-                @keyframes spin-slow {
-                    from {
-                        transform: rotate(0deg);
-                    }
-                    to {
-                        transform: rotate(360deg);
-                    }
-                }
-                @keyframes shimmer {
-                    0% {
-                        transform: translateX(-100%);
-                    }
-                    100% {
-                        transform: translateX(100%);
-                    }
-                }
-                .animate-spin-slow {
-                    animation: spin-slow 20s linear infinite;
-                }
-                .animate-shimmer {
-                    animation: shimmer 3s infinite;
-                }
-            `}</style>
-
-            {/* Statistics Section - Removed top margin */}
+            {/* Statistics Section */}
             <div className="bg-white py-8 md:py-12 lg:py-16 shadow-md">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                         {Object.entries(stats).map(([key, value]) => (
-                            <div key={key} className="text-center p-4">
+                            <div key={key} className="text-center">
                                 <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-indigo-600 mb-2">{value}</div>
                                 <div className="text-sm md:text-base lg:text-lg text-gray-600 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
                             </div>
@@ -558,6 +534,21 @@ export default function HomePage() {
                 pauseOnHover
                 theme="light"
             />
+
+            {/* Add required styles */}
+            <style jsx>{`
+                @keyframes border-rotate {
+                    0%, 100% {
+                        transform: rotate(0deg);
+                    }
+                    50% {
+                        transform: rotate(180deg);
+                    }
+                }
+                .animate-border {
+                    animation: border-rotate 8s linear infinite;
+                }
+            `}</style>
         </div>
     );
 }
