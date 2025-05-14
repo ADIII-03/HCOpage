@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const baseURL = 'https://hco-backend.onrender.com/api/v1';  // Production backend URL
+
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:8000/api/v1', // Hardcoded for development
+    baseURL,
     withCredentials: true,
     timeout: 30000, // 30 second timeout for file uploads
     headers: {
@@ -30,15 +32,17 @@ axiosInstance.interceptors.response.use(
         return response;
     },
     async (error) => {
+        console.error('API Error:', error);
         if (error.code === 'ERR_NETWORK') {
             return Promise.reject({
                 ...error,
-                message: 'Unable to connect to server. Please check if the server is running on port 8000.'
+                message: 'Network error. Please check your internet connection.'
             });
         }
 
         if (error.response?.status === 401) {
             localStorage.removeItem('token');
+            localStorage.removeItem('user');
             window.location.href = '/admin';
         }
 
