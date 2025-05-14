@@ -255,7 +255,7 @@ const Gallery = () => {
       {isAdmin && (
         <button
           onClick={() => handleDeleteImage(projectIndex, imageIndex)}
-          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-100 transition-opacity duration-200 hover:bg-red-600 sm:opacity-0 sm:group-hover:opacity-100"
+          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
           disabled={deleting}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -275,61 +275,45 @@ const Gallery = () => {
       className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col"
     >
       <div className="relative flex-1 flex items-center justify-center p-4">
-        {/* Close and Back buttons - always visible */}
-        <div className="absolute top-0 left-0 right-0 flex justify-between items-center p-4 z-10">
-          {/* Back button */}
-          <button
-            onClick={closeSlideshow}
-            className="p-2 bg-white text-black rounded-full transition-opacity duration-200 hover:opacity-80"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-          </button>
+        {/* Close button - always visible on mobile */}
+        <button
+          onClick={closeSlideshow}
+          className="absolute top-4 right-4 p-2 bg-white text-black rounded-full z-10 md:opacity-50 md:hover:opacity-100 transition-opacity"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
 
-          {/* Close button */}
-          <button
-            onClick={closeSlideshow}
-            className="p-2 bg-white text-black rounded-full transition-opacity duration-200 hover:opacity-80"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
+        {/* Back button - always visible on mobile */}
+        <button
+          onClick={closeSlideshow}
+          className="absolute top-4 left-4 p-2 bg-white text-black rounded-full z-10 md:hidden"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
 
-        {/* Navigation buttons - hidden on very small screens */}
+        {/* Navigation buttons */}
         <button
           onClick={prevImage}
-          className="hidden sm:block absolute left-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 opacity-50 hover:opacity-100 transition-opacity"
+          className="absolute left-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 opacity-50 hover:opacity-100 transition-opacity"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        {/* Main Image with swipe handling for mobile */}
-        <div className="w-full h-full flex items-center justify-center">
-          <img
-            src={projects[currentProjectIndex].images[currentImageIndex].url}
-            alt={`${projects[currentProjectIndex].title} full view`}
-            className="max-h-full max-w-full object-contain"
-            onClick={(e) => {
-              // Handle tap for mobile navigation
-              const x = e.nativeEvent.clientX;
-              const width = window.innerWidth;
-              if (x < width / 2) {
-                prevImage();
-              } else {
-                nextImage();
-              }
-            }}
-          />
-        </div>
+        <img
+          src={projects[currentProjectIndex].images[currentImageIndex].url}
+          alt={`${projects[currentProjectIndex].title} full view`}
+          className="max-h-full max-w-full object-contain"
+        />
 
         <button
           onClick={nextImage}
-          className="hidden sm:block absolute right-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 opacity-50 hover:opacity-100 transition-opacity"
+          className="absolute right-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 opacity-50 hover:opacity-100 transition-opacity"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -337,16 +321,8 @@ const Gallery = () => {
         </button>
       </div>
 
-      {/* Mobile swipe instructions */}
-      <div className="sm:hidden text-white text-center pb-4 text-sm">
-        Tap left/right side to navigate
-      </div>
-
-      {/* Play/Pause and image counter */}
-      <div className="flex justify-between items-center p-4 bg-black bg-opacity-50">
-        <div className="text-white">
-          {currentImageIndex + 1} / {projects[currentProjectIndex].images.length}
-        </div>
+      {/* Play/Pause button */}
+      <div className="flex justify-center items-center p-4 bg-black bg-opacity-50">
         <button
           onClick={togglePlayPause}
           className="p-2 bg-white text-black rounded-full opacity-50 hover:opacity-100 transition-opacity"
@@ -409,7 +385,7 @@ const Gallery = () => {
             {/* Image Gallery Grid */}
             <div className="relative overflow-hidden rounded-lg">
               {project.images.length > 0 ? (
-                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
                   {project.images.map((image, imageIndex) => renderImage(project, index, imageIndex))}
                 </div>
               ) : (
