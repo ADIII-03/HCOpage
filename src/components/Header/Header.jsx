@@ -4,45 +4,9 @@ import { useAuth } from "../../context/AuthContext";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
-  const [hideTimeout, setHideTimeout] = useState(null);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      
-      // Clear any existing timeout
-      if (hideTimeout) clearTimeout(hideTimeout);
-      
-      // Show header when scrolling up
-      if (currentScrollY < lastScrollY) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Hide header when scrolling down and not at top
-        setIsVisible(false);
-      }
-      
-      // Set timeout to hide header after 1 second of no scrolling
-      const timeout = setTimeout(() => {
-        if (currentScrollY > 100) {
-          setIsVisible(false);
-        }
-      }, 1000);
-      
-      setHideTimeout(timeout);
-      setLastScrollY(currentScrollY);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (hideTimeout) clearTimeout(hideTimeout);
-    };
-  }, [lastScrollY, hideTimeout]);
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const closeMenu = () => setIsMenuOpen(false);
@@ -61,13 +25,11 @@ function Header() {
 
   return (
     <>
-      <header className={`fixed top-0 w-full z-50 transition-transform duration-300 bg-white border-b border-gray-200 ${
-        isVisible ? 'translate-y-0' : '-translate-y-full'
-      }`}>
-        <nav className="px-4 lg:px-8 py-2">
+      <header className="fixed top-0 w-full z-50 bg-white border-b border-gray-200">
+        <nav className="px-4 lg:px-8 py-3">
           <div className="flex items-center justify-between mx-auto max-w-screen-xl">
             {/* Logo */}
-            <Link to="/" className="flex items-center py-2">
+            <Link to="/" className="flex items-center">
               <img src="/11zon_cropped.png" className="h-12 w-auto" alt="Logo" />
             </Link>
 
@@ -115,7 +77,7 @@ function Header() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="fixed inset-0 top-[60px] bg-white z-40">
+          <div className="fixed inset-0 top-[72px] bg-white z-40">
             <div className="flex flex-col items-center pt-4 pb-20 overflow-y-auto">
               {[
                 { name: "Home", path: "/" },
@@ -148,7 +110,7 @@ function Header() {
         )}
       </header>
       {/* Spacer div to prevent content from being hidden under fixed header */}
-      <div className="h-[60px]"></div>
+      <div className="h-[72px]"></div>
     </>
   );
 }

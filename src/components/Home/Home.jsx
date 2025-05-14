@@ -205,7 +205,7 @@ export default function HomePage() {
     return (
         <div className="bg-gray-100 min-h-screen">
             {/* Hero Section with Enhanced Animation */}
-            <div className="relative h-[600px] flex items-center justify-center text-center overflow-hidden"
+            <div className="relative h-[600px] flex items-center justify-center text-center overflow-hidden mt-[72px]"
                 style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}>
@@ -229,10 +229,10 @@ export default function HomePage() {
 
                     {/* Text content */}
                     <div className="bg-black/30 backdrop-blur-md p-10 rounded-xl max-w-4xl transition-transform duration-300 hover:scale-105 shadow-xl">
-                        <h1 className="text-5xl font-bold text-white mb-4 opacity-0 animate-fadeIn drop-shadow-lg">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 opacity-0 animate-fadeIn drop-shadow-lg">
                             One Step Towards Humanity
                         </h1>
-                        <p className="text-xl text-white/90 max-w-3xl mx-auto opacity-0 animate-fadeIn animation-delay-500 drop-shadow-lg">
+                        <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto opacity-0 animate-fadeIn animation-delay-500 drop-shadow-lg">
                             The Humanity Club Organization (HCO) is dedicated to fostering compassion, inclusivity, and positive social change through sustainable community development initiatives.
                         </p>
                     </div>
