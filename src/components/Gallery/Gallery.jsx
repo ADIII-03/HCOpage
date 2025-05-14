@@ -249,13 +249,13 @@ const Gallery = () => {
       <img
         src={project.images[imageIndex].url}
         alt={`${project.title} image ${imageIndex + 1}`}
-        className="w-full h-64 object-cover rounded-lg cursor-pointer"
+        className="w-full h-48 sm:h-64 object-cover rounded-lg cursor-pointer"
         onClick={() => openSlideshow(projectIndex, imageIndex)}
       />
       {isAdmin && (
         <button
           onClick={() => handleDeleteImage(projectIndex, imageIndex)}
-          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full transition-transform hover:scale-110"
           disabled={deleting}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -272,48 +272,50 @@ const Gallery = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col"
+      className="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col touch-none"
     >
       <div className="relative flex-1 flex items-center justify-center p-4">
-        {/* Close button - always visible on mobile */}
+        {/* Close button - always visible */}
         <button
           onClick={closeSlideshow}
-          className="absolute top-4 right-4 p-2 bg-white text-black rounded-full z-10 md:opacity-50 md:hover:opacity-100 transition-opacity"
+          className="fixed top-4 right-4 p-2 bg-white text-black rounded-full z-10 hover:bg-gray-200 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        {/* Back button - always visible on mobile */}
+        {/* Back button - visible on mobile */}
         <button
           onClick={closeSlideshow}
-          className="absolute top-4 left-4 p-2 bg-white text-black rounded-full z-10 md:hidden"
+          className="fixed top-4 left-4 p-2 bg-white text-black rounded-full z-10 sm:hidden hover:bg-gray-200 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
         </button>
 
-        {/* Navigation buttons */}
+        {/* Navigation buttons - hidden on very small screens */}
         <button
           onClick={prevImage}
-          className="absolute left-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 opacity-50 hover:opacity-100 transition-opacity"
+          className="hidden sm:block fixed left-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 hover:bg-gray-200 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
 
-        <img
-          src={projects[currentProjectIndex].images[currentImageIndex].url}
-          alt={`${projects[currentProjectIndex].title} full view`}
-          className="max-h-full max-w-full object-contain"
-        />
+        <div className="w-full h-full flex items-center justify-center">
+          <img
+            src={projects[currentProjectIndex].images[currentImageIndex].url}
+            alt={`${projects[currentProjectIndex].title} full view`}
+            className="max-h-[85vh] max-w-[90vw] w-auto h-auto object-contain"
+          />
+        </div>
 
         <button
           onClick={nextImage}
-          className="absolute right-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 opacity-50 hover:opacity-100 transition-opacity"
+          className="hidden sm:block fixed right-4 p-2 bg-white text-black rounded-full transform -translate-y-1/2 top-1/2 hover:bg-gray-200 transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -321,11 +323,11 @@ const Gallery = () => {
         </button>
       </div>
 
-      {/* Play/Pause button */}
-      <div className="flex justify-center items-center p-4 bg-black bg-opacity-50">
+      {/* Play/Pause and image counter */}
+      <div className="fixed bottom-0 inset-x-0 flex justify-center items-center p-4 bg-black bg-opacity-50">
         <button
           onClick={togglePlayPause}
-          className="p-2 bg-white text-black rounded-full opacity-50 hover:opacity-100 transition-opacity"
+          className="p-2 bg-white text-black rounded-full hover:bg-gray-200 transition-colors mx-2"
         >
           {isPlaying ? (
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -338,6 +340,9 @@ const Gallery = () => {
             </svg>
           )}
         </button>
+        <span className="text-white">
+          {currentImageIndex + 1} / {projects[currentProjectIndex].images.length}
+        </span>
       </div>
     </motion.div>
   );
@@ -385,20 +390,20 @@ const Gallery = () => {
             {/* Image Gallery Grid */}
             <div className="relative overflow-hidden rounded-lg">
               {project.images.length > 0 ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {project.images.map((image, imageIndex) => renderImage(project, index, imageIndex))}
                 </div>
               ) : (
-                <div className="text-center py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
+                <div className="text-center py-12 sm:py-20 bg-gray-50 rounded-xl border-2 border-dashed border-gray-200">
                   <motion.div
                     initial={{ opacity: 0.5, scale: 0.95 }}
                     whileHover={{ opacity: 1, scale: 1 }}
                     className="space-y-3"
                   >
-                    <svg className="w-20 h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-16 h-16 sm:w-20 sm:h-20 mx-auto text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <p className="text-gray-500 text-lg">No images available yet</p>
+                    <p className="text-gray-500 text-base sm:text-lg">No images available yet</p>
                   </motion.div>
                 </div>
               )}
