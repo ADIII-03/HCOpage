@@ -205,48 +205,76 @@ export default function HomePage() {
     return (
         <div className="bg-gray-100 min-h-screen">
             {/* Hero Section with Enhanced Animation */}
-            <div className="relative h-[600px] flex items-center justify-center text-center overflow-hidden mt-[96px] md:mt-[120px]"
+            <div className="relative min-h-[600px] md:h-[700px] lg:h-[800px] flex items-center justify-center text-center overflow-hidden mt-[72px] md:mt-[96px]"
                 style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}>
-                {/* Animated background circles */}
+                {/* Background Effects */}
                 <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute -left-10 -top-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-                    <div className="absolute -right-10 -top-10 w-72 h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-                    <div className="absolute -bottom-10 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+                    <div className="absolute -left-10 -top-10 w-48 md:w-72 h-48 md:h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
+                    <div className="absolute -right-10 -top-10 w-48 md:w-72 h-48 md:h-72 bg-yellow-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
+                    <div className="absolute -bottom-10 left-20 w-48 md:w-72 h-48 md:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
                 </div>
 
-                <div className="relative z-10 flex flex-col items-center justify-center px-4 pt-8">
-                    {/* Logo */}
-                    <div className="w-40 h-40 mb-8 relative animate-float">
-                        <img
-                            src="/11zon_cropped.png"
-                            alt="HCO Logo"
-                            className="w-full h-full object-contain"
-                        />
-                        <div className="absolute inset-0 bg-white opacity-20 rounded-full filter blur-md animate-pulse"></div>
+                <div className="relative z-10 flex flex-col items-center justify-center">
+                    {/* Logo with enhanced animation */}
+                    <div className="absolute w-full h-full flex items-center justify-center">
+                        <div className="w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96 relative animate-spin-slow">
+                            <img
+                                src="/11zon_cropped.png"
+                                alt="HCO Logo"
+                                className="w-full h-full object-contain opacity-10"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent animate-shimmer"></div>
+                        </div>
                     </div>
 
                     {/* Text content */}
-                    <div className="bg-black/30 backdrop-blur-md p-8 md:p-10 rounded-xl max-w-4xl transition-transform duration-300 hover:scale-105 shadow-xl">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 opacity-0 animate-fadeIn drop-shadow-lg">
+                    <div className="relative z-20 max-w-4xl mx-auto px-4 md:px-8">
+                        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 opacity-0 animate-fadeIn drop-shadow-lg">
                             One Step Towards Humanity
                         </h1>
-                        <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto opacity-0 animate-fadeIn animation-delay-500 drop-shadow-lg">
+                        <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-white/90 max-w-3xl mx-auto opacity-0 animate-fadeIn animation-delay-500 drop-shadow-lg">
                             The Humanity Club Organization (HCO) is dedicated to fostering compassion, inclusivity, and positive social change through sustainable community development initiatives.
                         </p>
                     </div>
                 </div>
             </div>
 
+            {/* Add required styles to the existing animations.css file */}
+            <style jsx>{`
+                @keyframes spin-slow {
+                    from {
+                        transform: rotate(0deg);
+                    }
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+                @keyframes shimmer {
+                    0% {
+                        transform: translateX(-100%);
+                    }
+                    100% {
+                        transform: translateX(100%);
+                    }
+                }
+                .animate-spin-slow {
+                    animation: spin-slow 20s linear infinite;
+                }
+                .animate-shimmer {
+                    animation: shimmer 3s infinite;
+                }
+            `}</style>
+
             {/* Statistics Section */}
-            <div className="bg-white py-12 shadow-md mt-8">
+            <div className="bg-white py-8 md:py-12 lg:py-16 shadow-md">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
                         {Object.entries(stats).map(([key, value]) => (
-                            <div key={key} className="text-center">
-                                <div className="text-4xl font-bold text-indigo-600 mb-2">{value}</div>
-                                <div className="text-gray-600 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
+                            <div key={key} className="text-center p-4">
+                                <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-indigo-600 mb-2">{value}</div>
+                                <div className="text-sm md:text-base lg:text-lg text-gray-600 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</div>
                             </div>
                         ))}
                     </div>
