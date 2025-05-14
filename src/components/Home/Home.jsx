@@ -208,6 +208,7 @@ export default function HomePage() {
             <div className="relative min-h-[500px] md:h-[600px] lg:h-[700px] flex items-center justify-center text-center overflow-hidden"
                 style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    marginTop: '0'
                 }}>
                 {/* Background Effects */}
                 <div className="absolute inset-0 overflow-hidden">
@@ -216,23 +217,20 @@ export default function HomePage() {
                     <div className="absolute -bottom-10 left-20 w-48 md:w-72 h-48 md:h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
                 </div>
 
-                <div className="relative z-10 flex flex-col items-center justify-center">
-                    {/* Logo with float animation and shining border */}
-                    <div className="absolute w-full h-full flex items-center justify-center">
-                        <div className="w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96 relative animate-float">
-                            <div className="absolute inset-0 rounded-full animate-border bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500"></div>
-                            <div className="absolute inset-[3px] rounded-full bg-white flex items-center justify-center">
-                                <img
-                                    src="/11zon_cropped.png"
-                                    alt="HCO Logo"
-                                    className="w-[95%] h-[95%] object-contain"
-                                />
-                            </div>
-                        </div>
+                {/* Background Logo */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div className="w-64 h-64 md:w-96 md:h-96 lg:w-[500px] lg:h-[500px] relative animate-float opacity-20">
+                        <img
+                            src="/11zon_cropped.png"
+                            alt="Background Logo"
+                            className="w-full h-full object-contain"
+                        />
                     </div>
+                </div>
 
-                    {/* Text content */}
-                    <div className="relative z-20 max-w-4xl">
+                {/* Content Container */}
+                <div className="relative z-20">
+                    <div className="max-w-4xl">
                         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 md:mb-6 opacity-0 animate-fadeIn drop-shadow-lg">
                             One Step Towards Humanity
                         </h1>
@@ -244,9 +242,9 @@ export default function HomePage() {
             </div>
 
             {/* Statistics Section */}
-            <div className="bg-white py-8 md:py-12 lg:py-16 shadow-md">
+            <div className="bg-white shadow-md">
                 <div className="container mx-auto">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 py-8">
                         {Object.entries(stats).map(([key, value]) => (
                             <div key={key} className="text-center">
                                 <div className="text-2xl md:text-3xl lg:text-4xl font-bold text-indigo-600 mb-2">{value}</div>
