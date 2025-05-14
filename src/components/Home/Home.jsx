@@ -219,12 +219,21 @@ export default function HomePage() {
 
                 {/* Background Logo */}
                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="w-64 h-64 md:w-96 md:h-96 lg:w-[500px] lg:h-[500px] relative animate-float opacity-20">
-                        <img
-                            src="/11zon_cropped.png"
-                            alt="Background Logo"
-                            className="w-full h-full object-contain"
-                        />
+                    <div className="w-64 h-64 md:w-96 md:h-96 lg:w-[500px] lg:h-[500px] relative animate-spin-slow">
+                        <div className="absolute inset-0 filter blur-md">
+                            <img
+                                src="/11zon_cropped.png"
+                                alt="Background Logo"
+                                className="w-full h-full object-contain opacity-20"
+                            />
+                        </div>
+                        <div className="absolute inset-0">
+                            <img
+                                src="/11zon_cropped.png"
+                                alt="Background Logo Overlay"
+                                className="w-full h-full object-contain opacity-10"
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -535,16 +544,16 @@ export default function HomePage() {
 
             {/* Add required styles */}
             <style jsx>{`
-                @keyframes border-rotate {
-                    0%, 100% {
+                @keyframes spin-slow {
+                    from {
                         transform: rotate(0deg);
                     }
-                    50% {
-                        transform: rotate(180deg);
+                    to {
+                        transform: rotate(360deg);
                     }
                 }
-                .animate-border {
-                    animation: border-rotate 8s linear infinite;
+                .animate-spin-slow {
+                    animation: spin-slow 30s linear infinite;
                 }
             `}</style>
         </div>
