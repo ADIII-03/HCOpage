@@ -21,7 +21,8 @@ function Contact() {
           setValue(key, parsedData[key]);
         });
       } catch (error) {
-        // Silent error handling for localStorage
+        console.error('Error parsing saved form data:', error);
+        localStorage.removeItem('contactFormData');
       }
     }
   }, [setValue]);
@@ -30,11 +31,17 @@ function Contact() {
     try {
       setSubmitStatus({ type: 'loading', message: 'Sending message...' });
 
-      const response = await axiosInstance.post('/contact/send', {
-        name: data.name,
-        email: data.email,
-        message: data.message
-      });
+      // Save form data before submission in case of failure
+      localStorage.setItem('contactFormData', JSON.stringify(data));
+
+      if (import.meta.env.DEV) {
+        console.log('Sending contact form:', {
+          url: `${axiosInstance.defaults.baseURL}/contact/send`,
+          data
+        });
+      }
+
+      const response = await axiosInstance.post('/contact/send', data);
 
       if (response.data?.success) {
         setSubmitStatus({
@@ -42,8 +49,7 @@ function Contact() {
           message: response.data.message || 'Message sent successfully! We will get back to you soon.'
         });
         
-        localStorage.setItem('contactFormData', JSON.stringify(data));
-        
+        // Save successful submission for reference
         const existingSubmissions = JSON.parse(localStorage.getItem("contactFormSubmissions")) || [];
         existingSubmissions.push({
           ...data,
@@ -51,19 +57,38 @@ function Contact() {
         });
         localStorage.setItem("contactFormSubmissions", JSON.stringify(existingSubmissions));
         
+        // Clear form data
         localStorage.removeItem('contactFormData');
-        reset({
-          name: '',
-          email: '',
-          message: ''
-        });
+        reset();
       } else {
         throw new Error(response.data?.message || 'Failed to send message');
       }
     } catch (error) {
+      console.error('Contact form submission error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+
+      let errorMessage = 'Failed to send message. ';
+      
+      if (error.code === 'ERR_NETWORK') {
+        errorMessage += import.meta.env.DEV
+          ? 'Please ensure the backend server is running.'
+          : 'Please check your internet connection and try again.';
+      } else if (error.response?.status === 429) {
+        errorMessage += 'Too many attempts. Please try again later.';
+      } else if (error.response?.status >= 500) {
+        errorMessage += import.meta.env.DEV
+          ? `Server error: ${error.message}`
+          : 'An unexpected error occurred. Please try again later.';
+      } else {
+        errorMessage += error.response?.data?.message || 'Please try again.';
+      }
+
       setSubmitStatus({
         type: 'error',
-        message: error.response?.data?.message || error.message || 'Failed to send message. Please try again.'
+        message: errorMessage
       });
     }
   };
@@ -103,7 +128,10 @@ function Contact() {
             <div>
               <label className="block text-gray-700 font-medium">Full Name</label>
               <input
-                {...register('name', { required: 'Name is required' })}
+                {...register('name', { 
+                  required: 'Name is required',
+                  minLength: { value: 2, message: 'Name must be at least 2 characters' }
+                })}
                 className={`w-full mt-2 p-4 border ${errors.name ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 placeholder="John Doe"
               />
@@ -114,7 +142,10 @@ function Contact() {
               <input
                 {...register('email', {
                   required: 'Email is required',
-                  pattern: { value: /\S+@\S+\.\S+/, message: 'Invalid email address' },
+                  pattern: { 
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, 
+                    message: 'Invalid email address' 
+                  },
                 })}
                 className={`w-full mt-2 p-4 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 placeholder="you@example.com"
@@ -124,7 +155,10 @@ function Contact() {
             <div>
               <label className="block text-gray-700 font-medium">Message</label>
               <textarea
-                {...register('message', { required: 'Message is required' })}
+                {...register('message', { 
+                  required: 'Message is required',
+                  minLength: { value: 10, message: 'Message must be at least 10 characters' }
+                })}
                 className={`w-full mt-2 p-4 border ${errors.message ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none`}
                 rows="5"
                 placeholder="Write your message here..."
@@ -165,7 +199,6 @@ function Contact() {
               and contribute towards creating meaningful change.
             </p>
             <a
-      
               href="https://forms.gle/L8PMpknuJmoMUbBs6"
               target="_blank"
               rel="noopener noreferrer"

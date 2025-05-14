@@ -1,13 +1,12 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API || 'http://localhost:8000/api/v1';
-console.log('Environment:', import.meta.env.MODE); // Log environment
-console.log('API URL:', baseURL); // Log API URL
+// Use environment variables with fallbacks
+const baseURL = (import.meta.env.VITE_API || 'http://localhost:8000/api/v1').replace(/\/+$/, '');
 
 const axiosInstance = axios.create({
     baseURL,
     withCredentials: true,
-    timeout: 30000, // 30 second timeout for file uploads
+    timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -21,62 +20,111 @@ axiosInstance.interceptors.request.use(
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
-        // Log request details (remove in production later)
-        console.log('Request:', {
-            url: config.url,
-            method: config.method,
-            headers: config.headers,
-            withCredentials: config.withCredentials
-        });
+        // Log request details in development
+        if (import.meta.env.DEV) {
+            console.log('API Request:', {
+                url: `${config.baseURL}${config.url}`,
+                method: config.method,
+                headers: config.headers
+            });
+        }
         return config;
     },
     (error) => {
-        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
 
-// Add a response interceptor to handle auth errors
+// Add a response interceptor to handle auth errors and network issues
 axiosInstance.interceptors.response.use(
-    (response) => {
-        // Log successful responses (remove in production later)
-        console.log('Response:', {
-            status: response.status,
-            data: response.data
-        });
-        return response;
-    },
+    (response) => response,
     async (error) => {
-        // Detailed error logging
-        console.error('API Error Details:', {
-            message: error.message,
-            code: error.code,
-            status: error.response?.status,
-            data: error.response?.data,
-            config: {
-                url: error.config?.url,
+        // Log full error details in development
+        if (import.meta.env.DEV) {
+            console.error('API Error:', {
+                url: `${error.config?.baseURL}${error.config?.url}`,
                 method: error.config?.method,
-                headers: error.config?.headers,
-                withCredentials: error.config?.withCredentials
-            }
-        });
-
-        if (error.code === 'ERR_NETWORK') {
-            return Promise.reject({
-                ...error,
-                message: 'Network error. Please check your internet connection and ensure the backend server is running.'
+                status: error.response?.status,
+                data: error.response?.data,
+                headers: error.config?.headers
             });
         }
 
-        // Handle authentication errors
+        // Network errors
+        if (error.code === 'ERR_NETWORK') {
+            console.error('Network Error:', {
+                url: error.config?.url,
+                method: error.config?.method,
+                baseURL: error.config?.baseURL
+            });
+            return Promise.reject({
+                ...error,
+                message: import.meta.env.DEV 
+                    ? 'Network error. Please check your internet connection and ensure the backend server is running.'
+                    : 'Unable to connect to the server. Please try again later.'
+            });
+        }
+
+        // 404 errors
+        if (error.response?.status === 404) {
+            console.error('404 Error:', {
+                url: `${error.config?.baseURL}${error.config?.url}`,
+                method: error.config?.method
+            });
+            return Promise.reject({
+                ...error,
+                message: import.meta.env.DEV
+                    ? `API endpoint not found: ${error.config?.url}`
+                    : 'The requested resource was not found.'
+            });
+        }
+
+        // Authentication errors
         if (error.response?.status === 401) {
-            console.log('Authentication error, clearing credentials...');
             localStorage.removeItem('token');
             localStorage.removeItem('user');
-            // Add a small delay before redirect to ensure logging
-            setTimeout(() => {
-                window.location.href = '/admin';
-            }, 100);
+            window.location.href = '/admin';
+            return Promise.reject({
+                ...error,
+                message: 'Your session has expired. Please log in again.'
+            });
+        }
+
+        // Rate limiting
+        if (error.response?.status === 429) {
+            return Promise.reject({
+                ...error,
+                message: 'Too many requests. Please try again later.'
+            });
+        }
+
+        // Server errors
+        if (error.response?.status >= 500) {
+            console.error('Server Error:', {
+                status: error.response.status,
+                data: error.response.data,
+                url: error.config?.url
+            });
+            return Promise.reject({
+                ...error,
+                message: import.meta.env.DEV 
+                    ? error.response?.data?.message || error.message
+                    : 'An unexpected error occurred. Our team has been notified.'
+            });
+        }
+
+        // Handle CORS errors specifically
+        if (error.response?.status === 403 && error.response?.data?.message?.includes('CORS')) {
+            console.error('CORS Error:', {
+                origin: window.location.origin,
+                target: error.config?.url
+            });
+            return Promise.reject({
+                ...error,
+                message: import.meta.env.DEV
+                    ? `CORS error: ${error.response.data.message}`
+                    : 'Unable to connect to the server. Please try again later.'
+            });
         }
 
         const errorMessage = error.response?.data?.message || error.message || 'An error occurred';

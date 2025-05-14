@@ -7,7 +7,7 @@ const FounderMessage = () => {
         <div className="w-full md:w-1/3">
           <div className="relative rounded-full overflow-hidden aspect-square">
             <img 
-              src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80"
+              src="/WhatsApp Image 2025-05-15 at 00.43.28_409cd770.jpg"
               alt="Saba Sheikh"
               className="w-full h-full object-cover"
             />

@@ -40,40 +40,67 @@ const Gallery = () => {
   const fetchProjects = async (retry = false) => {
     try {
       setError(null);
-      const response = await axiosInstance.get('/gallery/projects');
-      if (response.data?.projects) {
-        setProjects(response.data.projects);
+      // Log the full URL in development
+      if (import.meta.env.DEV) {
+        console.log('Fetching projects from:', `${axiosInstance.defaults.baseURL}/gallery`);
+      }
+      const response = await axiosInstance.get('/gallery');
+      if (response.data?.data?.projects) {
+        setProjects(response.data.data.projects);
         setRetryCount(0); // Reset retry count on success
+      } else {
+        throw new Error('Invalid response format from server');
       }
     } catch (error) {
-      console.error('Fetch error:', {
+      console.error('Gallery fetch error:', {
         message: error.message,
         code: error.code,
-        status: error.response?.status
+        status: error.response?.status,
+        url: error.config?.url,
+        baseURL: error.config?.baseURL,
+        fullURL: `${error.config?.baseURL}${error.config?.url}`,
+        response: error.response?.data
       });
 
-      // Set default projects if server is not responding
-      setProjects([
-        { title: 'Project Shakti', description: 'Women empowerment drives and awareness workshops.', images: [] },
-        { title: 'Workshops', description: 'Interactive educational and hygiene workshops.', images: [] },
-        { title: 'Project Taleem', description: 'Free educational programs for underprivileged children.', images: [] },
-        { title: 'Project Manavta', description: 'Environmental initiatives and plantation drives.', images: [] },
-        { title: 'Project Ehsaas', description: 'Visits to old age homes and orphanages.', images: [] },
-        { title: 'Project Ahaar', description: 'Food distribution to those in need.', images: [] },
-      ]);
+      // Only set default projects in development environment
+      if (import.meta.env.DEV) {
+        setProjects([
+          { title: 'Project Shakti', description: 'Women empowerment drives and awareness workshops.', images: [] },
+          { title: 'Workshops', description: 'Interactive educational and hygiene workshops.', images: [] },
+          { title: 'Project Taleem', description: 'Free educational programs for underprivileged children.', images: [] },
+          { title: 'Project Manavta', description: 'Environmental initiatives and plantation drives.', images: [] },
+          { title: 'Project Ehsaas', description: 'Visits to old age homes and orphanages.', images: [] },
+          { title: 'Project Ahaar', description: 'Food distribution to those in need.', images: [] },
+        ]);
+      }
 
-      // Show appropriate error message
+      // Show appropriate error message based on environment
       if (error.code === 'ERR_NETWORK') {
         setError(
-          "Cannot connect to server. Please ensure the backend server is running on port 8000. " +
-          (retryCount < 3 ? "Retrying..." : "Please refresh the page to try again.")
+          import.meta.env.DEV
+            ? "Cannot connect to server. Please ensure the backend server is running on port 8000. " +
+              (retryCount < 3 ? "Retrying..." : "Please refresh the page to try again.")
+            : "Unable to load gallery projects. Please check your internet connection and try again."
         );
         
-        // Implement retry logic
+        // Implement exponential backoff retry logic
         if (retryCount < 3 && !retry) {
           setRetryCount(prev => prev + 1);
-          setTimeout(() => fetchProjects(true), 3000); // Retry after 3 seconds
+          const retryDelay = Math.min(1000 * Math.pow(2, retryCount), 10000); // Max 10 second delay
+          setTimeout(() => fetchProjects(true), retryDelay);
         }
+      } else if (error.response?.status === 404) {
+        setError(
+          import.meta.env.DEV
+            ? `API endpoint not found: ${error.config?.baseURL}${error.config?.url}`
+            : "Gallery projects not found. Please try again later."
+        );
+      } else if (error.response?.status >= 500) {
+        setError(
+          import.meta.env.DEV
+            ? `Server error: ${error.message}`
+            : "Unable to load gallery projects. Our team has been notified."
+        );
       } else {
         setError(error.message || "Failed to load gallery projects. Please try again later.");
       }
@@ -103,11 +130,14 @@ const Gallery = () => {
       setUploading(true);
       setError(null);
 
-      console.log('Uploading image:', {
-        projectIndex,
-        projectTitle: project.title,
-        fileName: file.name
-      });
+      if (import.meta.env.DEV) {
+        console.log('Uploading image:', {
+          projectIndex,
+          projectTitle: project.title,
+          fileName: file.name,
+          url: `${axiosInstance.defaults.baseURL}/gallery/upload`
+        });
+      }
 
       const response = await axiosInstance.post('/gallery/upload', formData, {
         headers: {
@@ -115,29 +145,35 @@ const Gallery = () => {
         },
       });
 
-      console.log('Upload response:', response.data);
+      if (import.meta.env.DEV) {
+        console.log('Upload response:', response.data);
+      }
 
-      if (response.data?.success && response.data?.image) {
+      if (response.data?.data?.image) {
         setProjects(prevProjects => {
           const newProjects = [...prevProjects];
           newProjects[projectIndex] = {
             ...newProjects[projectIndex],
             images: [...newProjects[projectIndex].images, {
-              url: response.data.image.url,
-              publicId: response.data.image.publicId,
-              description: response.data.image.description
+              url: response.data.data.image.imageUrl,
+              publicId: response.data.data.image._id, // Using MongoDB _id for delete operations
+              description: response.data.data.image.description
             }]
           };
           return newProjects;
         });
+      } else {
+        throw new Error('Invalid response format from server');
       }
     } catch (error) {
       console.error('Upload error details:', {
         message: error.message,
         response: error.response?.data,
-        status: error.response?.status
+        status: error.response?.status,
+        url: error.config?.url,
+        baseURL: error.config?.baseURL
       });
-      setError(error.response?.data?.error || "Failed to upload image. Please try again.");
+      setError(error.response?.data?.message || "Failed to upload image. Please try again.");
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -154,26 +190,27 @@ const Gallery = () => {
 
     const imageToDelete = projects[projectIndex].images[imageIndex];
     
-    console.log('Attempting to delete image:', {
-      projectIndex,
-      imageIndex,
-      imageToDelete,
-      forceDelete
-    });
+    if (import.meta.env.DEV) {
+      console.log('Attempting to delete image:', {
+        projectIndex,
+        imageIndex,
+        imageToDelete,
+        forceDelete,
+        url: `${axiosInstance.defaults.baseURL}/gallery/${imageToDelete.publicId}`
+      });
+    }
 
     try {
       setDeleting(true);
       setError(null);
 
-      const response = await axiosInstance.delete('/gallery/delete', {
-        data: {
-          projectIndex,
-          publicId: imageToDelete.publicId,
-          forceDelete
-        }
+      const response = await axiosInstance.delete(`/gallery/${imageToDelete.publicId}`, {
+        data: { forceDelete }
       });
 
-      console.log('Delete response:', response.data);
+      if (import.meta.env.DEV) {
+        console.log('Delete response:', response.data);
+      }
 
       if (response.data?.success) {
         setProjects(prevProjects => {
@@ -190,7 +227,8 @@ const Gallery = () => {
         message: error.message,
         response: error.response?.data,
         status: error.response?.status,
-        config: error.config
+        config: error.config,
+        url: `${error.config?.baseURL}${error.config?.url}`
       });
 
       // If deletion fails and it wasn't a force delete attempt, offer force delete
@@ -203,7 +241,7 @@ const Gallery = () => {
         }
       }
 
-      setError(error.response?.data?.error || "Failed to delete image. Please try again.");
+      setError(error.response?.data?.message || "Failed to delete image. Please try again.");
     } finally {
       setDeleting(false);
     }
