@@ -4,6 +4,11 @@ import { FaHandHoldingHeart, FaUsers, FaGlobeAsia, FaLightbulb } from 'react-ico
 import FounderMessage from "../FounderMessage";
 
 export default function About() {
+  // Function to get the correct public URL for images
+  const getImageUrl = (imageName) => {
+    return new URL(`/public/${imageName}`, import.meta.url).href;
+  };
+
   return (
     <div className="bg-white">
       {/* Hero Section */}
@@ -34,9 +39,14 @@ export default function About() {
             viewport={{ once: true }}
           >
             <img
-              src="/11zon_cropped.png"
+              src={getImageUrl("11zon_cropped.png")}
               alt="About Humanity Club Organization"
               className="w-full h-auto rounded-2xl shadow-2xl"
+              onError={(e) => {
+                e.target.onerror = null; // Prevent infinite loop
+                e.target.src = "/11zon_cropped.png"; // Fallback to direct public path
+                console.log("Image load failed, using fallback path");
+              }}
             />
           </motion.div>
           <motion.div
