@@ -205,7 +205,7 @@ export default function HomePage() {
     return (
         <div className="bg-gray-100 min-h-screen">
             {/* Hero Section with Enhanced Animation */}
-            <div className="relative min-h-[600px] md:h-[700px] lg:h-[800px] flex items-center justify-center text-center overflow-hidden mt-[72px] md:mt-[96px]"
+            <div className="relative min-h-[500px] md:h-[600px] lg:h-[700px] flex items-center justify-center text-center overflow-hidden mt-[60px]"
                 style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}>
@@ -218,7 +218,7 @@ export default function HomePage() {
 
                 <div className="relative z-10 flex flex-col items-center justify-center">
                     {/* Logo with enhanced animation */}
-                    <div className="absolute w-full h-full flex items-center justify-center">
+                    <div className="absolute w-full h-full flex items-center justify-center translate-y-12">
                         <div className="w-48 h-48 md:w-72 md:h-72 lg:w-96 lg:h-96 relative animate-spin-slow">
                             <img
                                 src="/11zon_cropped.png"
@@ -267,7 +267,7 @@ export default function HomePage() {
                 }
             `}</style>
 
-            {/* Statistics Section */}
+            {/* Statistics Section - Removed top margin */}
             <div className="bg-white py-8 md:py-12 lg:py-16 shadow-md">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
