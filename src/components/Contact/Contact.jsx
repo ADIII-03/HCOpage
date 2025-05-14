@@ -29,12 +29,14 @@ function Contact() {
     }
   }, [setValue]);
 
+  // Clear form data from localStorage when component mounts
+  useEffect(() => {
+    localStorage.removeItem('contactFormData');
+  }, []);
+
   const onSubmit = async (data) => {
     try {
       setSubmitStatus({ type: 'loading', message: 'Sending message...' });
-
-      // Save form data before submission in case of failure
-      localStorage.setItem('contactFormData', JSON.stringify(data));
 
       const response = await axiosInstance.post('/contact/send', data);
 
@@ -44,19 +46,11 @@ function Contact() {
           message: response.data.message || 'Message sent successfully! We will get back to you soon.'
         });
         
-        // Save successful submission for reference
-        const existingSubmissions = JSON.parse(localStorage.getItem("contactFormSubmissions")) || [];
-        existingSubmissions.push({
-          ...data,
-          timestamp: new Date().toISOString()
-        });
-        localStorage.setItem("contactFormSubmissions", JSON.stringify(existingSubmissions));
-        
-        // Clear form data
-        localStorage.removeItem('contactFormData');
+        // Clear form and localStorage
         reset();
+        localStorage.removeItem('contactFormData');
 
-        // Clear form after 3 seconds of showing success message
+        // Clear success message after 3 seconds
         setTimeout(() => {
           setSubmitStatus({ type: '', message: '' });
         }, 3000);
@@ -73,19 +67,13 @@ function Contact() {
       let errorMessage = 'Failed to send message. ';
       
       if (error.code === 'ERR_NETWORK') {
-        errorMessage += import.meta.env.DEV
-          ? 'Please ensure the backend server is running.'
-          : 'Please check your internet connection and try again.';
+        errorMessage += 'Please check your internet connection and try again.';
       } else if (error.response?.status === 429) {
         errorMessage += 'Too many attempts. Please try again later.';
       } else if (error.response?.status === 404) {
-        errorMessage += import.meta.env.DEV
-          ? 'Contact endpoint not found. Please check the API route.'
-          : 'Service temporarily unavailable. Please try again later.';
+        errorMessage += 'Service temporarily unavailable. Please try again later.';
       } else if (error.response?.status >= 500) {
-        errorMessage += import.meta.env.DEV
-          ? `Server error: ${error.message}`
-          : 'An unexpected error occurred. Please try again later.';
+        errorMessage += 'An unexpected error occurred. Please try again later.';
       } else {
         errorMessage += error.response?.data?.message || 'Please try again.';
       }
@@ -94,6 +82,11 @@ function Contact() {
         type: 'error',
         message: errorMessage
       });
+
+      // Clear error message after 5 seconds
+      setTimeout(() => {
+        setSubmitStatus({ type: '', message: '' });
+      }, 5000);
     }
   };
 

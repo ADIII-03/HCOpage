@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 // Use environment variables with fallbacks
-const baseURL = (import.meta.env.VITE_API || 'http://localhost:8000/api/v1').replace(/\/+$/, '');
+const baseURL = import.meta.env.VITE_API || 'http://localhost:8000/api/v1';
 
+// Create axios instance with proper configuration
 const axiosInstance = axios.create({
-    baseURL,
+    baseURL: baseURL.trim(),
     withCredentials: true,
     timeout: 30000,
     headers: {
@@ -16,123 +17,117 @@ const axiosInstance = axios.create({
 // Add a request interceptor to add the auth token
 axiosInstance.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-        }
-        // Log request details in development
+        // Log request in development
         if (import.meta.env.DEV) {
             console.log('API Request:', {
                 url: `${config.baseURL}${config.url}`,
                 method: config.method,
-                headers: config.headers
+                headers: config.headers,
+                data: config.data
             });
+        }
+
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
     (error) => {
+        console.error('Request Error:', error);
         return Promise.reject(error);
     }
 );
 
-// Add a response interceptor to handle auth errors and network issues
+// Add a response interceptor to handle errors
 axiosInstance.interceptors.response.use(
-    (response) => response,
+    (response) => {
+        // Log successful response in development
+        if (import.meta.env.DEV) {
+            console.log('API Response:', {
+                url: `${response.config.baseURL}${response.config.url}`,
+                status: response.status,
+                data: response.data
+            });
+        }
+        return response;
+    },
     async (error) => {
-        // Log full error details in development
+        // Log detailed error in development
         if (import.meta.env.DEV) {
             console.error('API Error:', {
                 url: `${error.config?.baseURL}${error.config?.url}`,
                 method: error.config?.method,
                 status: error.response?.status,
                 data: error.response?.data,
-                headers: error.config?.headers
+                message: error.message
             });
         }
 
         // Network errors
-        if (error.code === 'ERR_NETWORK') {
-            console.error('Network Error:', {
-                url: error.config?.url,
-                method: error.config?.method,
-                baseURL: error.config?.baseURL
-            });
+        if (!error.response) {
             return Promise.reject({
                 ...error,
-                message: import.meta.env.DEV 
-                    ? 'Network error. Please check your internet connection and ensure the backend server is running.'
-                    : 'Unable to connect to the server. Please try again later.'
+                message: 'Network error. Please check your internet connection.'
             });
         }
 
-        // 404 errors
-        if (error.response?.status === 404) {
-            console.error('404 Error:', {
-                url: `${error.config?.baseURL}${error.config?.url}`,
-                method: error.config?.method
-            });
-            return Promise.reject({
-                ...error,
-                message: import.meta.env.DEV
-                    ? `API endpoint not found: ${error.config?.url}`
-                    : 'The requested resource was not found.'
-            });
-        }
+        // Handle specific error cases
+        switch (error.response.status) {
+            case 401:
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                window.location.href = '/admin';
+                return Promise.reject({
+                    ...error,
+                    message: 'Your session has expired. Please log in again.'
+                });
 
-        // Authentication errors
-        if (error.response?.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('user');
-            window.location.href = '/admin';
-            return Promise.reject({
-                ...error,
-                message: 'Your session has expired. Please log in again.'
-            });
-        }
+            case 403:
+                if (error.response.data?.message?.includes('CORS')) {
+                    console.error('CORS Error:', {
+                        origin: window.location.origin,
+                        target: error.config?.url
+                    });
+                }
+                return Promise.reject({
+                    ...error,
+                    message: 'Access denied. Please check your permissions.'
+                });
 
-        // Rate limiting
-        if (error.response?.status === 429) {
-            return Promise.reject({
-                ...error,
-                message: 'Too many requests. Please try again later.'
-            });
-        }
+            case 404:
+                return Promise.reject({
+                    ...error,
+                    message: 'The requested resource was not found.'
+                });
 
-        // Server errors
-        if (error.response?.status >= 500) {
-            console.error('Server Error:', {
-                status: error.response.status,
-                data: error.response.data,
-                url: error.config?.url
-            });
-            return Promise.reject({
-                ...error,
-                message: import.meta.env.DEV 
-                    ? error.response?.data?.message || error.message
-                    : 'An unexpected error occurred. Our team has been notified.'
-            });
-        }
+            case 429:
+                return Promise.reject({
+                    ...error,
+                    message: 'Too many requests. Please try again later.'
+                });
 
-        // Handle CORS errors specifically
-        if (error.response?.status === 403 && error.response?.data?.message?.includes('CORS')) {
-            console.error('CORS Error:', {
-                origin: window.location.origin,
-                target: error.config?.url
-            });
-            return Promise.reject({
-                ...error,
-                message: import.meta.env.DEV
-                    ? `CORS error: ${error.response.data.message}`
-                    : 'Unable to connect to the server. Please try again later.'
-            });
-        }
+            case 500:
+            case 502:
+            case 503:
+            case 504:
+                return Promise.reject({
+                    ...error,
+                    message: 'Server error. Please try again later.'
+                });
 
-        const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
-        return Promise.reject({
-            ...error,
-            message: errorMessage
-        });
+            default:
+                return Promise.reject({
+                    ...error,
+                    message: error.response.data?.message || 'An unexpected error occurred.'
+                });
+        }
     }
 );
+
+// Log the current baseURL in development
+if (import.meta.env.DEV) {
+    console.log('API Base URL:', baseURL);
+}
 
 export default axiosInstance;
