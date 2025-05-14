@@ -77,8 +77,8 @@ function Header() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="fixed inset-0 top-[72px] bg-white z-40">
-            <div className="flex flex-col items-center pt-4 pb-20 overflow-y-auto">
+          <div className="fixed inset-0 top-[72px] bg-white z-40 shadow-lg">
+            <div className="flex flex-col items-center pt-4 pb-20 overflow-y-auto h-full bg-white">
               {[
                 { name: "Home", path: "/" },
                 { name: "About", path: "/about" },

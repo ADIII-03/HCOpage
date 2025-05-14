@@ -205,7 +205,7 @@ export default function HomePage() {
     return (
         <div className="bg-gray-100 min-h-screen">
             {/* Hero Section with Enhanced Animation */}
-            <div className="relative h-[600px] flex items-center justify-center text-center overflow-hidden mt-[72px]"
+            <div className="relative h-[600px] flex items-center justify-center text-center overflow-hidden mt-[96px] md:mt-[120px]"
                 style={{
                     background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
                 }}>
@@ -216,7 +216,7 @@ export default function HomePage() {
                     <div className="absolute -bottom-10 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
                 </div>
 
-                <div className="relative z-10 flex flex-col items-center justify-center px-4">
+                <div className="relative z-10 flex flex-col items-center justify-center px-4 pt-8">
                     {/* Logo */}
                     <div className="w-40 h-40 mb-8 relative animate-float">
                         <img
@@ -228,8 +228,8 @@ export default function HomePage() {
                     </div>
 
                     {/* Text content */}
-                    <div className="bg-black/30 backdrop-blur-md p-10 rounded-xl max-w-4xl transition-transform duration-300 hover:scale-105 shadow-xl">
-                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 opacity-0 animate-fadeIn drop-shadow-lg">
+                    <div className="bg-black/30 backdrop-blur-md p-8 md:p-10 rounded-xl max-w-4xl transition-transform duration-300 hover:scale-105 shadow-xl">
+                        <h1 className="text-4xl md:text-5xl font-bold text-white mb-6 opacity-0 animate-fadeIn drop-shadow-lg">
                             One Step Towards Humanity
                         </h1>
                         <p className="text-lg md:text-xl text-white/90 max-w-3xl mx-auto opacity-0 animate-fadeIn animation-delay-500 drop-shadow-lg">
@@ -240,7 +240,7 @@ export default function HomePage() {
             </div>
 
             {/* Statistics Section */}
-            <div className="bg-white py-12 shadow-md">
+            <div className="bg-white py-12 shadow-md mt-8">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {Object.entries(stats).map(([key, value]) => (
