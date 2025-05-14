@@ -293,11 +293,13 @@ export default function HomePage() {
                             <div className="mt-4 relative bg-gray-50 p-4 rounded-lg">
                                 <div className="w-72 h-72 mx-auto relative">
                                     {isUploadingQr ? (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-lg">
-                                            <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                            </svg>
+                                        <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
+                                            <div className="flex flex-col items-center">
+                                                <svg className="animate-spin h-10 w-10 text-blue-600 mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                </svg>
+                                            </div>
                                         </div>
                                     ) : donationDetails.qrCodeImage && !qrError ? (
                                         <div className="relative group">
@@ -306,12 +308,7 @@ export default function HomePage() {
                                                     src={donationDetails.qrCodeImage}
                                                     alt="Donation QR Code"
                                                     className="w-full h-full object-contain"
-                                                    onError={(e) => {
-                                                        console.error('QR code image load error:', donationDetails.qrCodeImage);
-                                                        setQrError(true);
-                                                        e.target.style.display = 'none';
-                                                        alert('Failed to load QR code image');
-                                                    }}
+                                                    onError={() => setQrError(true)}
                                                 />
                                             </div>
                                             {isAdmin && (
@@ -321,15 +318,11 @@ export default function HomePage() {
                                                             if (window.confirm('Are you sure you want to delete this QR code?')) {
                                                                 setIsUploadingQr(true);
                                                                 try {
-                                                                    // Extract just the filename from the publicId
                                                                     const publicId = donationDetails.qrPublicId;
                                                                     if (!publicId) {
                                                                         throw new Error('No QR code to delete');
                                                                     }
-                                                                    
-                                                                    // Remove 'hco/qr-codes/' prefix if it exists
                                                                     const filename = publicId.replace('hco/qr-codes/', '');
-                                                                    
                                                                     await axiosInstance.delete(`/donation-details/qr/${filename}`);
                                                                     const updatedDetails = {
                                                                         ...donationDetails,
@@ -338,10 +331,8 @@ export default function HomePage() {
                                                                     };
                                                                     setDonationDetails(updatedDetails);
                                                                     localStorage.setItem('donationDetails', JSON.stringify(updatedDetails));
-                                                                    toast.success('QR code deleted successfully!');
                                                                 } catch (error) {
                                                                     console.error('Error deleting QR:', error);
-                                                                    alert('Failed to delete QR code');
                                                                 } finally {
                                                                     setIsUploadingQr(false);
                                                                 }
@@ -357,8 +348,10 @@ export default function HomePage() {
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-200 rounded-lg">
-                                            <span className="text-gray-500 text-lg">No QR Code Available</span>
+                                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 rounded-lg p-6">
+                                            <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                            </svg>
                                         </div>
                                     )}
                                     {isAdmin && (
