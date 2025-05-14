@@ -10,25 +10,30 @@ import FutureProjects from './components/FutureProjects/FutureProjects.jsx'
 import Gallery from './components/Gallery/Gallery.jsx'
 import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom'
 import NotFound from './components/NotFound/NotFound.jsx'
+import Login from "./components/Admin/Login";
+import { AuthProvider } from './context/AuthContext.jsx'
+import ProtectedRoute from './components/ProtectedRoute'
 
-
-
-const router= createBrowserRouter(
+const router = createBrowserRouter(
   createRoutesFromElements(
-  <>  <Route path='/' element={<Layout />}>
-<Route path='' element={<Home />}/>
-<Route path='about' element={<About />}/>
-    <Route path='contact' element={<Contact />} />
-    <Route path='FutureProjects' element={<FutureProjects />}/>
-    <Route path='Gallery' element={<Gallery />} />
-    <Route path='*' element={<NotFound />}/>
-    </Route>
-    
+    <>
+      <Route path='/' element={<Layout />}>
+        <Route index element={<Home />} />
+        <Route path='about' element={<About />} />
+        <Route path='contact' element={<Contact />} />
+        <Route path='FutureProjects' element={<FutureProjects />} />
+        <Route path='Gallery' element={<Gallery />} />
+        <Route path='admin' element={<Login />} />
+        <Route path='*' element={<NotFound />} />
+      </Route>
     </>
   )
 )
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}/>
-  </StrictMode>,
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  </StrictMode>
 )
