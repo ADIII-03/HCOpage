@@ -10,6 +10,7 @@ const axiosInstance = axios.create({
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',
+    'Origin': 'https://hc-opage.vercel.app'
   },
 });
 
@@ -21,6 +22,10 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Ensure CORS headers are present
+    config.headers['Origin'] = 'https://hc-opage.vercel.app';
+    
     return config;
   },
   (error) => Promise.reject(error)
@@ -39,12 +44,13 @@ axiosInstance.interceptors.response.use(
       try {
         // Try to refresh token
         const { data } = await axios.post(
-          `${baseURL}/admin/refresh-token`,
+          'https://hco-backend.onrender.com/api/v1/admin/refresh-token',
           {},
-          { 
+          {
             withCredentials: true,
             headers: {
-              'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`
+              'Authorization': `Bearer ${localStorage.getItem('refreshToken')}`,
+              'Origin': 'https://hc-opage.vercel.app'
             }
           }
         );
@@ -67,7 +73,10 @@ axiosInstance.interceptors.response.use(
 
     // Handle network errors
     if (error.code === 'ERR_NETWORK') {
-      console.error('Network Error:', error);
+      console.error('Network Error:', {
+        message: error.message,
+        config: error.config
+      });
       return Promise.reject({
         ...error,
         message: 'Network error. Please check your internet connection.'
@@ -76,16 +85,26 @@ axiosInstance.interceptors.response.use(
 
     // Handle CORS errors
     if (error.code === 'ERR_NETWORK' && error.message.includes('CORS')) {
-      console.error('CORS Error:', error);
+      console.error('CORS Error:', {
+        message: error.message,
+        config: error.config
+      });
       return Promise.reject({
         ...error,
-        message: 'CORS error. Please check your network configuration.'
+        message: 'Access error. Please try again later.'
       });
     }
 
+    // Log all errors for debugging
+    console.error('API Error:', {
+      status: error.response?.status,
+      message: error.message,
+      data: error.response?.data,
+      config: error.config
+    });
+
     // Handle other errors
     const errorMessage = error.response?.data?.message || error.message || 'An error occurred';
-    console.error('API Error:', error);
     return Promise.reject({
       ...error,
       message: errorMessage
