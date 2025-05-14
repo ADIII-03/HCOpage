@@ -24,18 +24,20 @@ const Login = () => {
         password 
       });
 
-      const { accessToken, refreshToken, user } = response.data.data;
+      const { data } = response.data;
+      
+      if (!data || !data.accessToken || !data.user) {
+        throw new Error("Invalid response from server");
+      }
 
-      // Store tokens
-      localStorage.setItem("token", accessToken);
-      localStorage.setItem("refreshToken", refreshToken);
-      localStorage.setItem("user", JSON.stringify(user));
+      // Store tokens and user data
+      localStorage.setItem("token", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       // Update auth state
-      login(user);
+      login(data.user);
 
-      console.log("Admin logged in successfully:", response.data.message);
-      
       // Navigate back to the page they came from, or home if no previous page
       const returnPath = location.state?.from || "/";
       navigate(returnPath);

@@ -26,16 +26,44 @@ function Header() {
   return (
     <>
       <header className="fixed top-0 w-full z-50 bg-white border-b border-gray-200">
-        <nav className="px-4 lg:px-8 py-3">
-          <div className="flex items-center justify-between mx-auto max-w-screen-xl">
+        <nav className="px-4 py-3">
+          <div className="flex items-center justify-between mx-auto max-w-7xl">
             {/* Logo */}
             <Link to="/" className="flex items-center">
               <img src="/11zon_cropped.png" className="h-12 w-auto" alt="Logo" />
             </Link>
 
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {[
+                { name: "Home", path: "/" },
+                { name: "About", path: "/about" },
+                { name: "Contact", path: "/contact" },
+                { name: "Gallery", path: "/gallery" },
+                { name: "Future Projects", path: "/FutureProjects" },
+              ].map((item) => (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `text-base font-medium ${
+                      isActive ? "text-orange-700" : "text-gray-700 hover:text-orange-600"
+                    }`
+                  }
+                >
+                  {item.name}
+                </NavLink>
+              ))}
+              <button
+                onClick={scrollToDonation}
+                className="text-orange-600 hover:text-orange-700 font-medium text-base"
+              >
+                Support Our Cause
+              </button>
+            </div>
+
             {/* Desktop Buttons */}
-            <div className="flex items-center space-x-2">
-              {/* Always visible buttons */}
+            <div className="flex items-center space-x-4">
               {user ? (
                 <button
                   onClick={logout}
@@ -60,9 +88,9 @@ function Header() {
                 Get started
               </a>
 
-              {/* Hamburger Menu Button */}
+              {/* Hamburger Menu Button - Only visible on mobile */}
               <button
-                className="p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
+                className="md:hidden p-2 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
                 onClick={toggleMenu}
                 aria-label="Toggle menu"
               >
@@ -77,7 +105,7 @@ function Header() {
 
         {/* Mobile Navigation Menu */}
         {isMenuOpen && (
-          <div className="fixed inset-0 top-[72px] bg-white z-40 shadow-lg">
+          <div className="md:hidden fixed inset-0 top-[72px] bg-white z-40 shadow-lg">
             <div className="flex flex-col items-center pt-4 pb-20 overflow-y-auto h-full bg-white">
               {[
                 { name: "Home", path: "/" },

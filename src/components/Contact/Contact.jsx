@@ -182,11 +182,13 @@ function Contact() {
               Scan the QR code or click the link below to discover more about HCO and our initiatives.
             </p>
             <div className="mt-6 flex flex-col items-center gap-4">
-              <img
-                src="/WhatsApp Image 2025-02-13 at 22.15.48_b1c1058e.jpg"
-                alt="HCO Linktree QR Code"
-                className="rounded-lg shadow-md w-[150px] h-[150px] object-contain bg-white"
-              />
+              <div className="relative w-full max-w-[150px] aspect-square">
+                <img
+                  src="/WhatsApp Image 2025-02-13 at 22.15.48_b1c1058e.jpg"
+                  alt="HCO Linktree QR Code"
+                  className="absolute inset-0 w-full h-full object-contain rounded-lg shadow-md bg-white"
+                />
+              </div>
               <a
                 href="https://linktr.ee/humanitycluborganization?utm_source=qr_code"
                 target="_blank"

@@ -8,9 +8,25 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
+        if (!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Please provide both email and password'
+            });
+        }
+
         // Find user
-        const user = await User.findOne({ email });
-        if (!user || !(await user.comparePassword(password))) {
+        const user = await User.findOne({ email }).select('+password');
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                message: 'Invalid email or password'
+            });
+        }
+
+        // Compare password
+        const isPasswordValid = await user.comparePassword(password);
+        if (!isPasswordValid) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid email or password'
@@ -43,7 +59,7 @@ router.post('/login', async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({
             success: false,
-            message: 'Login failed'
+            message: 'Internal server error during login'
         });
     }
 });
@@ -53,17 +69,15 @@ router.post('/refresh-token', async (req, res) => {
     try {
         const { refreshToken } = req.body;
         if (!refreshToken) {
-            return res.status(401).json({
+            return res.status(400).json({
                 success: false,
-                message: 'Refresh token required'
+                message: 'Refresh token is required'
             });
         }
 
-        // Verify refresh token
-        const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-        const user = await User.findById(decoded.id);
-
-        if (!user || user.refreshToken !== refreshToken) {
+        // Find user with this refresh token
+        const user = await User.findOne({ refreshToken });
+        if (!user) {
             return res.status(401).json({
                 success: false,
                 message: 'Invalid refresh token'
@@ -71,7 +85,7 @@ router.post('/refresh-token', async (req, res) => {
         }
 
         // Generate new tokens
-        const newAccessToken = user.generateAccessToken();
+        const accessToken = user.generateAccessToken();
         const newRefreshToken = user.generateRefreshToken();
 
         // Update refresh token
@@ -80,16 +94,17 @@ router.post('/refresh-token', async (req, res) => {
 
         res.json({
             success: true,
+            message: 'Tokens refreshed successfully',
             data: {
-                accessToken: newAccessToken,
+                accessToken,
                 refreshToken: newRefreshToken
             }
         });
     } catch (error) {
         console.error('Refresh token error:', error);
-        res.status(401).json({
+        res.status(500).json({
             success: false,
-            message: 'Invalid refresh token'
+            message: 'Internal server error while refreshing token'
         });
     }
 });
@@ -109,7 +124,7 @@ router.post('/logout', isAuthenticated, async (req, res) => {
         console.error('Logout error:', error);
         res.status(500).json({
             success: false,
-            message: 'Logout failed'
+            message: 'Error during logout'
         });
     }
 });
