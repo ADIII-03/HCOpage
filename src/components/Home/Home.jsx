@@ -302,9 +302,9 @@ export default function HomePage() {
                             <h3 className="text-2xl font-semibold text-gray-800">Donate via UPI</h3>
                             <p className="mt-2 text-gray-600">Scan the QR code or use the UPI ID below:</p>
                             <div className="mt-4 relative bg-gray-50 p-4 rounded-lg">
-                                <div className="w-72 h-72 mx-auto relative">
+                                <div className="relative w-full max-w-[250px] aspect-square mx-auto">
                                     {isUploadingQr ? (
-                                        <div className="w-full h-full flex items-center justify-center bg-gray-100 rounded-lg">
+                                        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
                                             <div className="flex flex-col items-center">
                                                 <svg className="animate-spin h-10 w-10 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -313,8 +313,8 @@ export default function HomePage() {
                                             </div>
                                         </div>
                                     ) : donationDetails.qrCodeImage ? (
-                                        <div className="relative group">
-                                            <div className="w-full h-full bg-white rounded-lg p-4 shadow-sm">
+                                        <div className="relative group w-full h-full">
+                                            <div className="absolute inset-0 bg-white rounded-lg p-2 shadow-sm">
                                                 <img
                                                     src={donationDetails.qrCodeImage}
                                                     alt="Donation QR Code"
@@ -356,9 +356,9 @@ export default function HomePage() {
                                                                 }
                                                             }
                                                         }}
-                                                        className="text-white bg-red-600 p-3 rounded-full hover:bg-red-700 transition-colors"
+                                                        className="text-white bg-red-600 p-2 rounded-full hover:bg-red-700 transition-colors"
                                                     >
-                                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
                                                     </button>
@@ -366,14 +366,14 @@ export default function HomePage() {
                                             )}
                                         </div>
                                     ) : (
-                                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 rounded-lg p-6">
-                                            <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-100 rounded-lg p-4">
+                                            <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
                                         </div>
                                     )}
                                     {isAdmin && (
-                                        <label className={`absolute top-4 right-4 ${isUploadingQr ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'} text-white px-4 py-2 rounded-lg transition text-lg`}>
+                                        <label className={`absolute top-2 right-2 ${isUploadingQr ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'} text-white px-3 py-1 rounded-lg transition text-sm`}>
                                             {isUploadingQr ? 'Uploading...' : 'Change QR'}
                                             <input
                                                 type="file"
