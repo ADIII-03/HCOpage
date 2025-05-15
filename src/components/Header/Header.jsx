@@ -40,7 +40,7 @@ function Header() {
                 { name: "About", path: "/about" },
                 { name: "Contact", path: "/contact" },
                 { name: "Gallery", path: "/gallery" },
-                { name: "Future Projects", path: "/FutureProjects" },
+                { name: "Future Projects", path: "/future-projects" },
               ].map((item) => (
                 <NavLink
                   key={item.path}
@@ -112,11 +112,12 @@ function Header() {
                 { name: "About", path: "/about" },
                 { name: "Contact", path: "/contact" },
                 { name: "Gallery", path: "/gallery" },
-                { name: "Future Projects", path: "/FutureProjects" },
+                { name: "Future Projects", path: "/future-projects" },
               ].map((item) => (
                 <NavLink
                   key={item.path}
                   to={item.path}
+                  onClick={closeMenu}
                   className={({ isActive }) =>
                     `text-base font-medium ${
                       isActive ? "text-orange-700" : "text-gray-700 hover:text-orange-600"
