@@ -3,12 +3,19 @@ import { Link } from "react-router-dom";
 import { FaInstagram, FaLinkedin, FaFacebook } from "react-icons/fa";
 
 export default function Footer() {
+  const handleLinkClick = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
   return (
     <footer className="bg-gray-800 text-white border-t">
       <div className="mx-auto w-full max-w-screen-xl p-6 lg:py-8">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center" onClick={handleLinkClick}>
               <img src="/11zon_cropped.png" className="mr-3 h-16" alt="Logo" />
             </Link>
           </div>
@@ -20,17 +27,17 @@ export default function Footer() {
               <h2 className="mb-6 text-sm font-semibold uppercase">Resources</h2>
               <ul className="font-medium space-y-2">
                 <li>
-                  <Link to="/" className="hover:underline" onClick={() => window.scrollTo(0, 0)}>
+                  <Link to="/" className="hover:underline" onClick={handleLinkClick}>
                     Home
                   </Link>
                 </li>
                 <li>
-                  <Link to="/about" className="hover:underline" onClick={() => window.scrollTo(0, 0)}>
+                  <Link to="/about" className="hover:underline" onClick={handleLinkClick}>
                     About
                   </Link>
                 </li>
                 <li>
-                  <Link to="/contact" className="hover:underline" onClick={() => window.scrollTo(0, 0)}>
+                  <Link to="/contact" className="hover:underline" onClick={handleLinkClick}>
                     Contact
                   </Link>
                 </li>
@@ -79,10 +86,14 @@ export default function Footer() {
               <h2 className="mb-6 text-sm font-semibold uppercase">Legal</h2>
               <ul className="font-medium space-y-2">
                 <li>
-                  <Link to="/privacy-policy" className="hover:underline">Privacy Policy</Link>
+                  <Link to="/privacy-policy" className="hover:underline" onClick={handleLinkClick}>
+                    Privacy Policy
+                  </Link>
                 </li>
                 <li>
-                  <Link to="/terms-and-conditions" className="hover:underline">Terms &amp; Conditions</Link>
+                  <Link to="/terms-and-conditions" className="hover:underline" onClick={handleLinkClick}>
+                    Terms &amp; Conditions
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -96,9 +107,9 @@ export default function Footer() {
         <div className="sm:flex sm:items-center sm:justify-between">
           <span className="text-sm sm:text-center">
             © 2025{" "}
-            <a href="/" className="hover:underline">
+            <Link to="/" className="hover:underline" onClick={handleLinkClick}>
               HCO
-            </a>
+            </Link>
             . All Rights Reserved.
           </span>
 

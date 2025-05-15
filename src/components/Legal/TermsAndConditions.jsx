@@ -1,6 +1,11 @@
 import React from 'react';
+import { useEffect } from 'react';
 
 const TermsAndConditions = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 sm:p-8">
@@ -66,7 +71,7 @@ const TermsAndConditions = () => {
                         <h2 className="text-xl font-semibold text-gray-800 mb-3">7. Governing Law</h2>
                         <p>
                             These Terms and Conditions are governed by the laws of India. Any disputes shall be subject 
-                            to the exclusive jurisdiction of the courts in [Your City], India.
+                            to the exclusive jurisdiction of the courts in Delhi, India.
                         </p>
                     </section>
 
@@ -95,9 +100,8 @@ const TermsAndConditions = () => {
                         <h2 className="text-xl font-semibold text-gray-800 mb-3">10. Contact Information</h2>
                         <p>
                             For any questions regarding these Terms and Conditions, please contact us at:<br />
-                            Email: info@hco.org<br />
-                            Phone: [Your Phone Number]<br />
-                            Address: [Your Organization's Address]
+                            Email: humanitycluborganisation@gmail.com<br />
+                            Address: Delhi, India
                         </p>
                         <p className="mt-4">
                             Last Updated: {new Date().toLocaleDateString()}
