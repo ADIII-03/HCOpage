@@ -2,19 +2,18 @@ import React from 'react'
 import {Outlet} from 'react-router-dom'
 import Header from './components/Header/Header'
 import Footer from './components/Footer/Footer'
+import App from './App'
 
-
-
-function Layout() {
+export default function Layout() {
   return (
-    
-    <>
-    <Header />
-    <Outlet />
-    <Footer />
-    
-    </>
+    <App>
+      <div className="min-h-screen flex flex-col">
+        <Header />
+        <main className="flex-grow">
+          <Outlet />
+        </main>
+        <Footer />
+      </div>
+    </App>
   )
 }
-
-export default Layout
