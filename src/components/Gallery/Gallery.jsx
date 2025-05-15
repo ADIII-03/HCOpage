@@ -42,7 +42,7 @@ const Gallery = () => {
       setError(null);
       // Log the full URL in development
       if (import.meta.env.DEV) {
-        console.log('Fetching projects from:', `${axiosInstance.defaults.baseURL}/gallery`);
+        // console.log('Fetching projects from:', `${axiosInstance.defaults.baseURL}/gallery`);
       }
       const response = await axiosInstance.get('/gallery');
       if (response.data?.data?.projects) {
@@ -131,12 +131,12 @@ const Gallery = () => {
       setError(null);
 
       if (import.meta.env.DEV) {
-        console.log('Uploading image:', {
-          projectIndex,
-          projectTitle: project.title,
-          fileName: file.name,
-          url: `${axiosInstance.defaults.baseURL}/gallery/upload`
-        });
+        // console.log('Uploading image:', {
+        //   projectIndex,
+        //   projectTitle: project.title,
+        //   fileName: file.name,
+        //   url: `${axiosInstance.defaults.baseURL}/gallery/upload`
+        // });
       }
 
       const response = await axiosInstance.post('/gallery/upload', formData, {
@@ -146,7 +146,7 @@ const Gallery = () => {
       });
 
       if (import.meta.env.DEV) {
-        console.log('Upload response:', response.data);
+        // console.log('Upload response:', response.data);
       }
 
       if (response.data?.data?.image) {
@@ -191,13 +191,13 @@ const Gallery = () => {
     const imageToDelete = projects[projectIndex].images[imageIndex];
     
     if (import.meta.env.DEV) {
-      console.log('Attempting to delete image:', {
-        projectIndex,
-        imageIndex,
-        imageToDelete,
-        forceDelete,
-        url: `${axiosInstance.defaults.baseURL}/gallery/${imageToDelete.publicId}`
-      });
+      // console.log('Attempting to delete image:', {
+      //   projectIndex,
+      //   imageIndex,
+      //   imageToDelete,
+      //   forceDelete,
+      //   url: `${axiosInstance.defaults.baseURL}/gallery/${imageToDelete.publicId}`
+      // });
     }
 
     try {
@@ -209,7 +209,7 @@ const Gallery = () => {
       });
 
       if (import.meta.env.DEV) {
-        console.log('Delete response:', response.data);
+        // console.log('Delete response:', response.data);
       }
 
       if (response.data?.success) {

@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-// Use environment variables with fallbacks
 const baseURL = import.meta.env.VITE_API || 'http://localhost:8000/api/v1';
 
-console.log('API Base URL:', baseURL); // Log the base URL being used
+console.log('API Base URL:', baseURL);
 
-// Create axios instance with proper configuration
 const axiosInstance = axios.create({
     baseURL: baseURL.trim(),
     withCredentials: true,
@@ -16,16 +14,14 @@ const axiosInstance = axios.create({
     }
 });
 
-// Add a request interceptor to add the auth token
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Log all requests in both development and production
-        console.log('API Request:', {
-            url: `${config.baseURL}${config.url}`,
-            method: config.method,
-            data: config.data,
-            headers: config.headers
-        });
+        // console.log('API Request:', {
+        //     url: `${config.baseURL}${config.url}`,
+        //     method: config.method,
+        //     data: config.data,
+        //     headers: config.headers
+        // });
 
         const token = localStorage.getItem('token');
         if (token) {
@@ -39,19 +35,16 @@ axiosInstance.interceptors.request.use(
     }
 );
 
-// Add a response interceptor to handle errors
 axiosInstance.interceptors.response.use(
     (response) => {
-        // Log successful responses
-        console.log('API Response:', {
-            url: `${response.config.baseURL}${response.config.url}`,
-            status: response.status,
-            data: response.data
-        });
+        // console.log('API Response:', {
+        //     url: `${response.config.baseURL}${response.config.url}`,
+        //     status: response.status,
+        //     data: response.data
+        // });
         return response;
     },
     async (error) => {
-        // Log detailed error information
         console.error('API Error:', {
             url: error.config ? `${error.config.baseURL}${error.config.url}` : 'No URL',
             method: error.config?.method,
@@ -60,7 +53,6 @@ axiosInstance.interceptors.response.use(
             message: error.message
         });
 
-        // Network errors
         if (!error.response) {
             return Promise.reject({
                 ...error,
@@ -68,7 +60,6 @@ axiosInstance.interceptors.response.use(
             });
         }
 
-        // Handle specific error cases
         switch (error.response.status) {
             case 401:
                 localStorage.removeItem('token');

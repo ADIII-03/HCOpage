@@ -524,7 +524,7 @@ export default function HomePage() {
             />
 
             {/* Add required styles */}
-            <style jsx>{`
+            {/* <style jsx>{`
                 @keyframes spin-slow {
                     from {
                         transform: rotate(0deg);
@@ -536,7 +536,7 @@ export default function HomePage() {
                 .animate-spin-slow {
                     animation: spin-slow 30s linear infinite;
                 }
-            `}</style>
+            `}</style> */}
         </div>
     );
 }

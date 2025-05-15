@@ -39,10 +39,10 @@ function Contact() {
       setSubmitStatus({ type: 'loading', message: 'Sending message...' });
 
       // Log the request being made
-      console.log('Sending contact form to:', '/contact/send', {
-        data,
-        method: 'POST'
-      });
+      // console.log('Sending contact form to:', '/contact/send', {
+      //   data,
+      //   method: 'POST'
+      // });
 
       const response = await axiosInstance.post('/contact/send', {
         name: data.name.trim(),
@@ -50,7 +50,7 @@ function Contact() {
         message: data.message.trim()
       });
 
-      console.log('Contact form response:', response.data);
+      // console.log('Contact form response:', response.data);
 
       if (response.data?.success) {
         setSubmitStatus({

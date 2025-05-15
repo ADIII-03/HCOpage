@@ -5,9 +5,7 @@ import FounderMessage from "../FounderMessage";
 
 export default function About() {
   // Function to get the correct public URL for images
-  const getImageUrl = (imageName) => {
-    return new URL(`/public/${imageName}`, import.meta.url).href;
-  };
+ 
 
   return (
     <div className="bg-white">
@@ -38,16 +36,18 @@ export default function About() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <img
-              src={getImageUrl("11zon_cropped.png")}
-              alt="About Humanity Club Organization"
-              className="w-full h-auto rounded-2xl shadow-2xl"
-              onError={(e) => {
-                e.target.onerror = null; // Prevent infinite loop
-                e.target.src = "/11zon_cropped.png"; // Fallback to direct public path
-                console.log("Image load failed, using fallback path");
-              }}
-            />
+           <img
+  src="/11zon_cropped.png"
+  alt="About Humanity Club Organization"
+  className="w-full h-auto rounded-2xl shadow-2xl"
+  onError={(e) => {
+    e.target.onerror = null;
+    e.target.src = "/fallback.png"; // Optional fallback
+    console.log("Image load failed, fallback used");
+  }}
+/>
+
+            
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: 50 }}
