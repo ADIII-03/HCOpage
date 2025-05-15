@@ -38,7 +38,19 @@ function Contact() {
     try {
       setSubmitStatus({ type: 'loading', message: 'Sending message...' });
 
-      const response = await axiosInstance.post('/contact/send', data);
+      // Log the request being made
+      console.log('Sending contact form to:', '/contact/send', {
+        data,
+        method: 'POST'
+      });
+
+      const response = await axiosInstance.post('/contact/send', {
+        name: data.name.trim(),
+        email: data.email.trim().toLowerCase(),
+        message: data.message.trim()
+      });
+
+      console.log('Contact form response:', response.data);
 
       if (response.data?.success) {
         setSubmitStatus({
@@ -61,7 +73,8 @@ function Contact() {
       console.error('Contact form submission error:', {
         message: error.message,
         status: error.response?.status,
-        data: error.response?.data
+        data: error.response?.data,
+        url: '/contact/send'
       });
 
       let errorMessage = 'Failed to send message. ';

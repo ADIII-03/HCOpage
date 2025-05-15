@@ -3,6 +3,8 @@ import axios from 'axios';
 // Use environment variables with fallbacks
 const baseURL = import.meta.env.VITE_API || 'http://localhost:8000/api/v1';
 
+console.log('API Base URL:', baseURL); // Log the base URL being used
+
 // Create axios instance with proper configuration
 const axiosInstance = axios.create({
     baseURL: baseURL.trim(),
@@ -17,15 +19,13 @@ const axiosInstance = axios.create({
 // Add a request interceptor to add the auth token
 axiosInstance.interceptors.request.use(
     (config) => {
-        // Log request in development
-        if (import.meta.env.DEV) {
-            console.log('API Request:', {
-                url: `${config.baseURL}${config.url}`,
-                method: config.method,
-                headers: config.headers,
-                data: config.data
-            });
-        }
+        // Log all requests in both development and production
+        console.log('API Request:', {
+            url: `${config.baseURL}${config.url}`,
+            method: config.method,
+            data: config.data,
+            headers: config.headers
+        });
 
         const token = localStorage.getItem('token');
         if (token) {
@@ -42,27 +42,23 @@ axiosInstance.interceptors.request.use(
 // Add a response interceptor to handle errors
 axiosInstance.interceptors.response.use(
     (response) => {
-        // Log successful response in development
-        if (import.meta.env.DEV) {
-            console.log('API Response:', {
-                url: `${response.config.baseURL}${response.config.url}`,
-                status: response.status,
-                data: response.data
-            });
-        }
+        // Log successful responses
+        console.log('API Response:', {
+            url: `${response.config.baseURL}${response.config.url}`,
+            status: response.status,
+            data: response.data
+        });
         return response;
     },
     async (error) => {
-        // Log detailed error in development
-        if (import.meta.env.DEV) {
-            console.error('API Error:', {
-                url: `${error.config?.baseURL}${error.config?.url}`,
-                method: error.config?.method,
-                status: error.response?.status,
-                data: error.response?.data,
-                message: error.message
-            });
-        }
+        // Log detailed error information
+        console.error('API Error:', {
+            url: error.config ? `${error.config.baseURL}${error.config.url}` : 'No URL',
+            method: error.config?.method,
+            status: error.response?.status,
+            data: error.response?.data,
+            message: error.message
+        });
 
         // Network errors
         if (!error.response) {
@@ -84,12 +80,6 @@ axiosInstance.interceptors.response.use(
                 });
 
             case 403:
-                if (error.response.data?.message?.includes('CORS')) {
-                    console.error('CORS Error:', {
-                        origin: window.location.origin,
-                        target: error.config?.url
-                    });
-                }
                 return Promise.reject({
                     ...error,
                     message: 'Access denied. Please check your permissions.'
@@ -98,22 +88,13 @@ axiosInstance.interceptors.response.use(
             case 404:
                 return Promise.reject({
                     ...error,
-                    message: 'The requested resource was not found.'
+                    message: `The requested resource was not found: ${error.config.url}`
                 });
 
             case 429:
                 return Promise.reject({
                     ...error,
                     message: 'Too many requests. Please try again later.'
-                });
-
-            case 500:
-            case 502:
-            case 503:
-            case 504:
-                return Promise.reject({
-                    ...error,
-                    message: 'Server error. Please try again later.'
                 });
 
             default:
@@ -124,10 +105,5 @@ axiosInstance.interceptors.response.use(
         }
     }
 );
-
-// Log the current baseURL in development
-if (import.meta.env.DEV) {
-    console.log('API Base URL:', baseURL);
-}
 
 export default axiosInstance;
