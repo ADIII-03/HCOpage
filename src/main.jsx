@@ -13,6 +13,8 @@ import NotFound from './components/NotFound/NotFound.jsx'
 import Login from "./components/Admin/Login";
 import { AuthProvider } from './context/AuthContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute'
+import PrivacyPolicy from './components/Legal/PrivacyPolicy'
+import TermsAndConditions from './components/Legal/TermsAndConditions'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,6 +26,8 @@ const router = createBrowserRouter(
         <Route path='FutureProjects' element={<FutureProjects />} />
         <Route path='Gallery' element={<Gallery />} />
         <Route path='admin' element={<Login />} />
+        <Route path='privacy-policy' element={<PrivacyPolicy />} />
+        <Route path='terms-and-conditions' element={<TermsAndConditions />} />
         <Route path='*' element={<NotFound />} />
       </Route>
     </>
