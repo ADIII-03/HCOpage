@@ -129,12 +129,12 @@ export default function HomePage() {
         if (type === 'qr') {
             // Validate file size and type
             if (file.size > 5 * 1024 * 1024) {
-                alert('File size must be less than 5MB');
+                toast.error('File size must be less than 5MB');
                 return;
             }
 
             if (!file.type.startsWith('image/')) {
-                alert('Only image files are allowed');
+                toast.error('Only image files are allowed');
                 return;
             }
 
@@ -161,7 +161,7 @@ export default function HomePage() {
             } catch (error) {
                 console.error('Error uploading QR:', error);
                 setQrError(true);
-                alert('Failed to upload QR code. Please try again.');
+                toast.error(error.response?.data?.message || 'Failed to upload QR code');
             } finally {
                 setIsUploadingQr(false);
             }
@@ -340,7 +340,7 @@ export default function HomePage() {
                                                                     if (!publicId) {
                                                                         throw new Error('No QR code to delete');
                                                                     }
-                                                                    const filename = publicId.replace('hco/qr-codes/', '');
+                                                                    const filename = publicId.split('/').pop();
                                                                     await axiosInstance.delete(`/donation-details/qr/${filename}`);
                                                                     const updatedDetails = {
                                                                         ...donationDetails,
@@ -349,8 +349,10 @@ export default function HomePage() {
                                                                     };
                                                                     setDonationDetails(updatedDetails);
                                                                     localStorage.setItem('donationDetails', JSON.stringify(updatedDetails));
+                                                                    toast.success('QR code deleted successfully!');
                                                                 } catch (error) {
                                                                     console.error('Error deleting QR:', error);
+                                                                    toast.error(error.response?.data?.message || 'Failed to delete QR code');
                                                                 } finally {
                                                                     setIsUploadingQr(false);
                                                                 }
