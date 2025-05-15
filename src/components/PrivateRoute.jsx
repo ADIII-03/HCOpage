@@ -1,10 +1,21 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
+import React, { useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const PrivateRoute = ({ children, adminOnly = false }) => {
   const { user, loading, isAdmin } = useAuth();
-  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading) {
+      if (!user) {
+        // Redirect to login page with return path
+        const currentPath = window.location.pathname;
+        window.location.href = `/admin/login?returnTo=${encodeURIComponent(currentPath)}`;
+      } else if (adminOnly && !isAdmin) {
+        // Redirect non-admin users to home page
+        window.location.href = '/';
+      }
+    }
+  }, [user, loading, isAdmin, adminOnly]);
 
   if (loading) {
     return (
@@ -17,17 +28,12 @@ const PrivateRoute = ({ children, adminOnly = false }) => {
     );
   }
 
-  if (!user) {
-    // Redirect to login page with return path
-    return <Navigate to="/admin/login" state={{ from: location.pathname }} replace />;
+  // Only render children if authenticated and proper role
+  if (user && (!adminOnly || isAdmin)) {
+    return children;
   }
 
-  if (adminOnly && !isAdmin) {
-    // Redirect non-admin users to home page
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
+  return null;
 };
 
 export default PrivateRoute; 

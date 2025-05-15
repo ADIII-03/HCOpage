@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import axiosInstance from '../utils/axiosInstance';
 
@@ -8,7 +7,6 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
 
   // Check token expiration and user data on mount and periodically
   useEffect(() => {
@@ -56,7 +54,7 @@ export const AuthProvider = ({ children }) => {
     // Check auth status every minute
     const interval = setInterval(checkAuth, 60 * 1000);
     return () => clearInterval(interval);
-  }, [navigate]);
+  }, []);
 
   // Update axios interceptor for handling 401 responses
   useEffect(() => {
@@ -73,7 +71,7 @@ export const AuthProvider = ({ children }) => {
     return () => {
       axiosInstance.interceptors.response.eject(interceptor);
     };
-  }, [navigate]);
+  }, []);
 
   const login = (userData) => {
     setUser(userData);
@@ -95,8 +93,8 @@ export const AuthProvider = ({ children }) => {
       // Show logout message
       toast.info(message);
       
-      // Navigate to login
-      navigate('/admin/login');
+      // Instead of using navigate, we'll use window.location
+      window.location.href = '/admin/login';
     }
   };
 
