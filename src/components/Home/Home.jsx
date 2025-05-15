@@ -330,41 +330,21 @@ export default function HomePage() {
                                                 />
                                             </div>
                                             {isAdmin && (
-                                                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
-                                                    <button
-                                                        onClick={async () => {
-                                                            if (window.confirm('Are you sure you want to delete this QR code?')) {
-                                                                setIsUploadingQr(true);
-                                                                try {
-                                                                    const publicId = donationDetails.qrPublicId;
-                                                                    if (!publicId) {
-                                                                        throw new Error('No QR code to delete');
-                                                                    }
-                                                                    const filename = publicId.split('/').pop();
-                                                                    await axiosInstance.delete(`/donation-details/qr/${filename}`);
-                                                                    const updatedDetails = {
-                                                                        ...donationDetails,
-                                                                        qrCodeImage: null,
-                                                                        qrPublicId: null
-                                                                    };
-                                                                    setDonationDetails(updatedDetails);
-                                                                    localStorage.setItem('donationDetails', JSON.stringify(updatedDetails));
-                                                                    toast.success('QR code deleted successfully!');
-                                                                } catch (error) {
-                                                                    console.error('Error deleting QR:', error);
-                                                                    toast.error(error.response?.data?.message || 'Failed to delete QR code');
-                                                                } finally {
-                                                                    setIsUploadingQr(false);
-                                                                }
+                                                <label className="absolute top-4 right-4 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded-lg transition text-lg">
+                                                    Change QR
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files[0];
+                                                            if (file) {
+                                                                handleImageUpload(file, 'qr');
+                                                                e.target.value = ''; // Reset input
                                                             }
                                                         }}
-                                                        className="text-white bg-red-600 p-3 rounded-full hover:bg-red-700 transition-colors"
-                                                    >
-                                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </div>
+                                                    />
+                                                </label>
                                             )}
                                         </div>
                                     ) : (
@@ -372,25 +352,24 @@ export default function HomePage() {
                                             <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
+                                            {isAdmin && (
+                                                <label className="mt-4 bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded-lg transition text-lg">
+                                                    Upload QR
+                                                    <input
+                                                        type="file"
+                                                        accept="image/*"
+                                                        className="hidden"
+                                                        onChange={(e) => {
+                                                            const file = e.target.files[0];
+                                                            if (file) {
+                                                                handleImageUpload(file, 'qr');
+                                                                e.target.value = ''; // Reset input
+                                                            }
+                                                        }}
+                                                    />
+                                                </label>
+                                            )}
                                         </div>
-                                    )}
-                                    {isAdmin && (
-                                        <label className={`absolute top-4 right-4 ${isUploadingQr ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700 cursor-pointer'} text-white px-4 py-2 rounded-lg transition text-lg`}>
-                                            {isUploadingQr ? 'Uploading...' : 'Change QR'}
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className="hidden"
-                                                onChange={(e) => {
-                                                    const file = e.target.files[0];
-                                                    if (file) {
-                                                        handleImageUpload(file, 'qr');
-                                                        e.target.value = ''; // Reset input
-                                                    }
-                                                }}
-                                                disabled={isUploadingQr}
-                                            />
-                                        </label>
                                     )}
                                 </div>
                             </div>
