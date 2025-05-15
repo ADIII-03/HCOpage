@@ -3,6 +3,8 @@ import { Mail, Lock } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import axiosInstance from "../../utils/axiosInstance";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -15,8 +17,13 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    if (loading) return;
+    
     setLoading(true);
     setError("");
+
+    // Show loading toast
+    const loadingToast = toast.loading("Logging in...");
 
     try {
       const response = await axiosInstance.post("/admin/login", { 
@@ -30,13 +37,27 @@ const Login = () => {
         throw new Error("Invalid response from server");
       }
 
-      // Store tokens and user data
-      localStorage.setItem("token", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("user", JSON.stringify(data.user));
+      // Store tokens and user data with expiry
+      const expiryTime = new Date().getTime() + 60 * 60 * 1000; // 1 hour from now
+      const userData = {
+        ...data.user,
+        expiryTime,
+        accessToken: data.accessToken,
+        refreshToken: data.refreshToken
+      };
+      
+      localStorage.setItem("userData", JSON.stringify(userData));
 
       // Update auth state
       login(data.user);
+
+      // Update toast to success
+      toast.update(loadingToast, {
+        render: "Successfully logged in!",
+        type: "success",
+        isLoading: false,
+        autoClose: 2000
+      });
 
       // Navigate back to the page they came from, or home if no previous page
       const returnPath = location.state?.from || "/";
@@ -44,7 +65,17 @@ const Login = () => {
 
     } catch (err) {
       console.error("Login error:", err);
-      setError(err.response?.data?.message || "Login failed. Please check your credentials and try again.");
+      const errorMessage = err.response?.data?.message || "Login failed. Please check your credentials and try again.";
+      
+      // Update toast to error
+      toast.update(loadingToast, {
+        render: errorMessage,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000
+      });
+      
+      setError(errorMessage);
       setEmail("");
       setPassword("");
     } finally {
@@ -70,6 +101,7 @@ const Login = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
           </div>
@@ -86,6 +118,7 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                disabled={loading}
               />
             </div>
           </div>
@@ -94,9 +127,20 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 rounded-xl hover:scale-105 transition-transform duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2 rounded-xl transition-all duration-200 shadow-lg 
+              ${loading 
+                ? 'opacity-50 cursor-not-allowed' 
+                : 'hover:scale-105 hover:shadow-xl active:scale-95'}`}
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? (
+              <div className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Logging in...
+              </div>
+            ) : "Login"}
           </button>
 
           {/* Error Message */}
@@ -107,6 +151,18 @@ const Login = () => {
           )}
         </form>
       </div>
+      <ToastContainer 
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
     </div>
   );
 };
