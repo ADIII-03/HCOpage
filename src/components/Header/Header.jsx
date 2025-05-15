@@ -118,11 +118,10 @@ function Header() {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
-                    `w-full text-center py-4 text-lg ${
-                      isActive ? "text-orange-700 font-bold" : "text-gray-700"
+                    `text-base font-medium ${
+                      isActive ? "text-orange-700" : "text-gray-700 hover:text-orange-600"
                     }`
                   }
-                  onClick={closeMenu}
                 >
                   {item.name}
                 </NavLink>
