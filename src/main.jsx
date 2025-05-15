@@ -23,7 +23,6 @@ const router = createBrowserRouter(
       <Route path='FutureProjects' element={<FutureProjects />} />
       <Route path='Gallery' element={<Gallery />} />
       <Route path='admin/login' element={<Login />} />
-      {/* Protected Admin Routes */}
       <Route
         path='admin/*'
         element={
@@ -38,12 +37,18 @@ const router = createBrowserRouter(
   )
 );
 
-// Wrap RouterProvider with AuthProvider
+// Create a root component to properly handle providers
+const Root = () => {
+  return (
+    <RouterProvider router={router} />
+  );
+};
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthProvider>
       <App>
-        <RouterProvider router={router} />
+        <Root />
       </App>
     </AuthProvider>
   </React.StrictMode>
