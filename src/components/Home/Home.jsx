@@ -319,8 +319,7 @@ export default function HomePage() {
                                                     src={donationDetails.qrCodeImage}
                                                     alt="Donation QR Code"
                                                     className="w-full h-full object-contain"
-                                                    onError={(e) => {
-                                                        console.error('Error loading QR code image');
+                                                    onError={() => {
                                                         const updatedDetails = {
                                                             ...donationDetails,
                                                             qrCodeImage: null
@@ -341,7 +340,8 @@ export default function HomePage() {
                                                                     if (!publicId) {
                                                                         throw new Error('No QR code to delete');
                                                                     }
-                                                                    await axiosInstance.delete(`/donation-details/qr/${publicId}`);
+                                                                    const filename = publicId.replace('hco/qr-codes/', '');
+                                                                    await axiosInstance.delete(`/donation-details/qr/${filename}`);
                                                                     const updatedDetails = {
                                                                         ...donationDetails,
                                                                         qrCodeImage: null,
@@ -349,10 +349,8 @@ export default function HomePage() {
                                                                     };
                                                                     setDonationDetails(updatedDetails);
                                                                     localStorage.setItem('donationDetails', JSON.stringify(updatedDetails));
-                                                                    toast.success('QR code deleted successfully!');
                                                                 } catch (error) {
                                                                     console.error('Error deleting QR:', error);
-                                                                    toast.error('Failed to delete QR code. Please try again.');
                                                                 } finally {
                                                                     setIsUploadingQr(false);
                                                                 }
@@ -372,7 +370,6 @@ export default function HomePage() {
                                             <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            <p className="mt-4 text-gray-500">No QR code uploaded</p>
                                         </div>
                                     )}
                                     {isAdmin && (
