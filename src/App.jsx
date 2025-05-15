@@ -1,16 +1,17 @@
+import React from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import './App.css'
+import './App.css';
 
-function App() {
+function App({ children }) {
   return (
     <div className="App">
-      {/* App content */}
+      {children}
       <ToastContainer
         position="top-right"
         autoClose={3000}
         hideProgressBar={false}
-        newestOnTop={false}
+        newestOnTop
         closeOnClick
         rtl={false}
         pauseOnFocusLoss

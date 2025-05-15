@@ -1,7 +1,7 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App';
+import './index.css';
 import Layout from './Layout.jsx'
 import Home from './components/Home/Home.jsx'
 import About from './components/About/About.jsx'
@@ -12,28 +12,37 @@ import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } 
 import NotFound from './components/NotFound/NotFound.jsx'
 import Login from "./components/Admin/Login";
 import { AuthProvider } from './context/AuthContext.jsx'
-import ProtectedRoute from './components/ProtectedRoute'
+import PrivateRoute from './components/PrivateRoute'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    <>
-      <Route path='/' element={<Layout />}>
-        <Route index element={<Home />} />
-        <Route path='about' element={<About />} />
-        <Route path='contact' element={<Contact />} />
-        <Route path='FutureProjects' element={<FutureProjects />} />
-        <Route path='Gallery' element={<Gallery />} />
-        <Route path='admin' element={<Login />} />
-        <Route path='*' element={<NotFound />} />
-      </Route>
-    </>
+    <Route element={<Layout />}>
+      <Route index element={<Home />} />
+      <Route path='about' element={<About />} />
+      <Route path='contact' element={<Contact />} />
+      <Route path='FutureProjects' element={<FutureProjects />} />
+      <Route path='Gallery' element={<Gallery />} />
+      <Route path='admin/login' element={<Login />} />
+      {/* Protected Admin Routes */}
+      <Route
+        path='admin/*'
+        element={
+          <PrivateRoute adminOnly>
+            {/* Add your admin dashboard component here */}
+            <div>Admin Dashboard</div>
+          </PrivateRoute>
+        }
+      />
+      <Route path='*' element={<NotFound />} />
+    </Route>
   )
-)
+);
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
+// Wrap RouterProvider with AuthProvider
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <React.StrictMode>
     <AuthProvider>
       <RouterProvider router={router} />
     </AuthProvider>
-  </StrictMode>
-)
+  </React.StrictMode>
+);
